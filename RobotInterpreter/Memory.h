@@ -419,8 +419,11 @@ namespace language {
 			else if (localMemory_.contains(name)) {
 				throw Call_error("Argument list expected.");
 			}
-			else
-				return (*higerFrame_)[name];
+			else {
+				if (higerFrame_)
+					return (*higerFrame_)[name];
+				else throw Initial_error("Undeclared variable.");
+			}
 		}
 		
 
