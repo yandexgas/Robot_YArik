@@ -1,0 +1,5 @@
+ukazatel drobnoye y;
+drobnoye x =5.4;
+y=adr x;
+*y=4;
+x=78.1;
