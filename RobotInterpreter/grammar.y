@@ -45,8 +45,9 @@ language::fparam* fparam_;
 %left '+' '-'
 %left '*' '/'
 %right UMINUS '~' RAZMER
-%right STAR ADR
+%right  ADR
 %left FIELD_OPER
+%right STAR
 %nonassoc '[' ']'
 
 %type <fparam_> arg
@@ -68,14 +69,10 @@ language::fparam* fparam_;
 %%
 
 program:
-	'\n' {}
-	| program stmt {(**$1).addStatement(*$2);
+	 program stmt {(**$1).addStatement(*$2);
 			$$=$1; delete $2;
 			root =$$;}
-	| program stmt '\n' {(**$1).addStatement(*$2);
-				$$=$1; delete $2;
-				root =$$;}
-	| program error '\n' {/*Здесь будет про ошибку*/}
+	| program error {/*Здесь будет про ошибку*/}
 	| {$$=new std::shared_ptr<language::Statement_list>();
 		(*$$)=std::make_shared<Statement_list>(1);
 		root =$$;}
@@ -212,7 +209,7 @@ arg:
 			$$->type=$2;
 			$$->name=*$3;
 			$$->isPtr=true;
-			delete $2;}
+			delete $3;}
 	;
 
 stmt_lst:

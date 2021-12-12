@@ -15,6 +15,9 @@ namespace language {
 		Node(std::int16_t lino) : lino_(lino) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>)=0;
 		virtual ~Node() {}
+		constexpr virtual int priority() const noexcept {
+			return 0;
+		}
 	};
 
 	class Leaf : public Node
@@ -504,6 +507,9 @@ namespace language {
 			else
 				return std::nullopt;
 		}
+		constexpr virtual int priority() const noexcept override {
+			return 1;
+		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 
 			mem->insert(name_, fptr_);
@@ -682,8 +688,10 @@ namespace language {
 		}
 		Statement_list(std::int16_t lino) :Node(lino) {}
 		void addStatement(std::shared_ptr<Node> santance) {
-			if (santance)
+			if (santance&&!santance->priority())
 				santenceLst_.push_back(santance);
+			else if(santance && santance->priority())
+				santenceLst_.push_front(santance);
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			for (auto a : santenceLst_)

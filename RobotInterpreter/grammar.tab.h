@@ -78,12 +78,12 @@
      CHITAT = 294,
      UMINUS = 295,
      ADR = 296,
-     STAR = 297,
-     FIELD_OPER = 298
+     FIELD_OPER = 297,
+     STAR = 298
    };
 #endif
 
-#include "Nodes.h"
+#include"Nodes.h"
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE

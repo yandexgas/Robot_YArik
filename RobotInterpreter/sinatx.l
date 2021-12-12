@@ -32,7 +32,7 @@ void yyerror(const char*);
 (poka)/[^a-zA-Z0-9_] {return WHILE;}
 (tsikl)/[^a-zA-Z0-9_] {return FOR;}
 (nachalo)/[^a-zA-Z0-9_] {return BEGIN_;}
-(konets)/[^a-zA-Z0-9_] {return END;}
+(konets)/([^a-zA-Z0-9_]|<EOF>) {return END;}
 (razmer)/[^a-zA-Z0-9_] {return RAZMER;}
 (proverka)/[^a-zA-Z0-9_] {return PROVERKA;}
 (\|\|) {return OR;}
@@ -58,11 +58,11 @@ void yyerror(const char*);
 (chitat)/[^a-zA-Z0-9_] {return CHITAT;}
 (adr)/[^a-zA-Z0-9_] {return ADR;}
 (=>) {return FIELD_OPER;}
-[<=>+/\-*~\[\],\(\);\n\{\}:] {return *yytext;}
+[<=>+/\-*~\[\],\(\);\{\}:] {return *yytext;}
 [a-zA-Z_][a-zA-Z_0-9]* {yylval.string=new std::string(yytext);
 			return name;}
 
-[ \t] {};
+[ \t\n] {};
 
 .	yyerror(yytext);
 
