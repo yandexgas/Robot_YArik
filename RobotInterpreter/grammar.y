@@ -194,12 +194,12 @@ decl:
 
 	| MASSIV name '=' expr {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::ARRAY, false);
-		delete $2;}
+		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::ARRAY, false, *$4);
+		delete $2;delete $4;}
 	| YACHEYKA name '=' expr {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::SQUARE, false);
-		delete $2);}
+		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::SQUARE, false, *$4);
+		delete $2; delete $4;}
 	;
 
 arg:

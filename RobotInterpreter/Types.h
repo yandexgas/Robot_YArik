@@ -268,28 +268,74 @@ namespace language {
 		virtual ~Link() override {}
 	};
 
+	class Pointer :public Type {
+	private:
+		std::shared_ptr<std::shared_ptr<Type>> ptr_;
+	public:
+		Pointer(std::shared_ptr<Type> ptr) {
+			ptr_ = std::make_shared<std::shared_ptr<Type>>(ptr);
+		}
+		Pointer() :ptr_(nullptr) {}
+		Pointer(Pointer& ptr) {
+			ptr_ = ptr.ptr_;
+		}
+		Pointer(Pointer&& ptr) noexcept {
+			ptr_ = std::move(ptr.ptr_);
+		}
+		Pointer(std::shared_ptr<std::shared_ptr<Type>> ptr) {
+			ptr_ = ptr;
+		}
+		virtual const Types getType() const noexcept override { return Types::POINTER; }
+		virtual void operator=(std::shared_ptr<Type> ptr) {
+			if (ptr->getType() == Types::POINTER) {
+				auto tmp = std::dynamic_pointer_cast<Pointer>(ptr)->ptr_;
+				if (ptr_ && (**tmp).getType() != (**ptr_).getType())
+					throw Type_error("Different pointer tipes");
+				ptr_ = tmp;
+			}
+			else
+				**ptr_ = ptr;
+		}
+		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+
+			return std::make_shared<Pointer>(ptr_);
+		}
+		virtual operator bool() {
+			if (*ptr_)
+				return true;
+			else return false;
+		}
+		std::shared_ptr<Type> operator*() {
+			return *ptr_;
+		}
+		virtual ~Pointer() {
+			//			if(ptr_)
+					//	delete ptr_;
+		}
+	};
+
 	class Square : public Type
 	{
 	private:
 		static const Types type = Types::SQUARE;
-		std::int32_t X_;
-		std::int32_t Y_;
-		bool busy_;
+		std::shared_ptr<Int> X_;
+		std::shared_ptr<Int> Y_;
+		std::shared_ptr<Bool> busy_;
 	public:
-		Square() : X_(0), Y_(0), busy_(false) {};
-		Square(std::int32_t x, std::int32_t y, bool busy) : X_(x), Y_(y), busy_(busy) {}
-		Square(Square& v) : X_(v.X_), Y_(v.Y_), busy_(v.busy_) {}
+		Square() : X_(std::make_shared<Int>(0)), Y_((std::make_shared<Int>(0))), busy_((std::make_shared<Bool>(false))) {};
+		Square(std::int32_t x, std::int32_t y, bool busy) : X_((std::make_shared<Int>(x))), Y_((std::make_shared<Int>(y))), busy_((std::make_shared<Bool>(busy))) {}
+		Square(Square& v) : X_((std::make_shared<Int>(*v.X_))), Y_((std::make_shared<Int>(*v.Y_))), busy_((std::make_shared<Bool>(*v.busy_))) {}
 		Square& operator=(Square val) {
-			X_ = val.X_;
-			Y_ = val.Y_;
-			busy_ = val.busy_;
+			*X_ = *(val.X_);
+			*Y_ = *(val.Y_);
+			*busy_ = *(val.busy_);
 			return *this;
 		}
 		virtual const Types getType() const noexcept override {
 			return type;
 		}
 		virtual std::shared_ptr<Type> makeClone() const noexcept override {
-			return std::make_shared<Square>(this->X_, this->Y_, this->busy_);
+			return std::make_shared<Square>(*X_, *Y_, *busy_);
 		}
 		virtual void operator=(std::shared_ptr<Type> a) {
 			*this = (*std::dynamic_pointer_cast<Square>(a));
@@ -298,22 +344,22 @@ namespace language {
 			return*this;
 		}
 		std::shared_ptr<Type> getY()const noexcept {
-			return std::make_shared<Link>(std::make_shared<Int>(Y_));
+			return Y_;
 		}
 		Square& setY(std::int32_t val) {
-			Y_ = val;
+			*Y_ = val;
 		}
 		std::shared_ptr<Type> getX()const noexcept {
-			return std::make_shared<Link>(std::make_shared<Int>(X_));
+			return X_;
 		}
 		Square& setX(std::int32_t val) {
-			X_ = val;
+			*X_ = val;
 		}
 		std::shared_ptr<Type> getBusy()const noexcept {
-			return std::make_shared<Link>(std::make_shared<Bool>(busy_));
+			return busy_;
 		}
 		Square& setBusy(bool val) {
-			busy_ = val;
+			*busy_ = val;
 		}
 		virtual ~Square() override {}
 	};
@@ -391,51 +437,7 @@ namespace language {
 		virtual ~Array() override {}
 	};
 
-	class Pointer :public Type {
-	private:
-		std::shared_ptr<std::shared_ptr<Type>> ptr_;
-	public:
-		Pointer(std::shared_ptr<Type> ptr)  {
-			ptr_ =std::make_shared<std::shared_ptr<Type>>(ptr);
-		}
-		Pointer() :ptr_(nullptr){}
-		Pointer(Pointer& ptr) {
-			ptr_ = ptr.ptr_;
-		}
-		Pointer(Pointer&& ptr) noexcept {
-			ptr_ = std::move(ptr.ptr_);
-		}
-		Pointer(std::shared_ptr<std::shared_ptr<Type>> ptr) {
-			ptr_ = ptr;
-		}
-		virtual const Types getType() const noexcept override { return Types::POINTER; }
-		virtual void operator=(std::shared_ptr<Type> ptr) {
-			if (ptr->getType() == Types::POINTER) {
-				auto tmp = std::dynamic_pointer_cast<Pointer>(ptr)->ptr_;
-				if (ptr_&&(**tmp).getType() != (**ptr_).getType())
-					throw Type_error("Different pointer tipes");
-				ptr_ = tmp;
-			}
-			else
-			**ptr_=ptr;
-		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override{
-
-			return std::make_shared<Pointer>(ptr_);
-		}
-		virtual operator bool() {
-			if (*ptr_)
-				return true;
-			else return false;
-		}
-		std::shared_ptr<Type> operator*() {
-			return *ptr_;
-		}
-		virtual ~Pointer() {
-//			if(ptr_)
-		//	delete ptr_;
-		}
-	};
+	
 	//Боже, простите меня за эту функцию, когда нибудь я сделаю вместо неё константную хэш таблицу для проверки совместимости типов, но это будет в другом коммите.
 	constexpr bool convertableTypes(Types t1, Types t2) {
 		switch (t1)

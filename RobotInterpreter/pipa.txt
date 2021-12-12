@@ -1,1 +1,8 @@
-5=5;
+yacheyka popa = {1,14,istino};
+tseloye x = popa=>x;
+tseloye y = popa=>y;
+logicheskoye z = popa=>busy;
+z=~z;
+logicheskoye a = popa=>busy;
+popa=>x=popa=>y;
+popa=>y=10001;

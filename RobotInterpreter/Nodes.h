@@ -423,7 +423,7 @@ namespace language {
 			for (int i = 0; i < 3; i++)
 				tmp[i] = init_expression_[i]->pass(mem);
 			if (tmp[0] && tmp[1] && tmp[2]) {
-				auto yach = std::make_shared<Square>((int)*(tmp[0].value()->getData()), (int)*(tmp[1].value()->getData()), (bool)*(tmp[0].value()->getData()));
+				auto yach = std::make_shared<Square>((int)*(tmp[0].value()->getData()), (int)*(tmp[1].value()->getData()), (bool)*(tmp[2].value()->getData()));
 				*var = std::make_shared<MemoryCell>(yach);
 			}
 			else
