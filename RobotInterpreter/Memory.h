@@ -12,16 +12,19 @@ namespace language {
 		bool isFloating(Types t1, Types t2 = Types::INT) {
 			return t1 == Types::FLOAT || t2 == Types::FLOAT;
 		}
+		bool lvalue;
 		friend class Function;
 	public:
-		MemoryCell(std::shared_ptr<Type> tp): data_(tp){}
+		MemoryCell(std::shared_ptr<Type> tp, bool lval=false): data_(tp), lvalue(lval){}
 		MemoryCell(MemoryCell& mem) {
 			//data_ = mem.data_->makeClone();
 			data_ = mem.data_;
+			lvalue = mem.lvalue;
 		}
 		MemoryCell(MemoryCell&& mem)noexcept {
 			//data_ = mem.data_->makeClone();
 			data_ = std::move(mem.data_);
+			lvalue = mem.lvalue;
 		}
 		std::shared_ptr<Type> getData() {
 			return data_;
@@ -154,30 +157,35 @@ namespace language {
 				throw Type_error("That object is not yacheyka.");
 			MemoryCell result;
 			auto tmp = std::dynamic_pointer_cast<Square>(source.data_);
+			MemoryCell res;
+			res.lvalue = true;
 			switch (field)
 			{
 			case language::YFields::X:
-				return tmp->getX();
+				res.data_= tmp->getX();
 				break;
 			case language::YFields::Y:
-				return tmp->getY();
+				res.data_ = tmp->getY();
 				break;
 			case language::YFields::BUSY:
-				return tmp->getBusy();
+				res.data_ = tmp->getBusy();
 				break;
 			}
+			return res;
 		}
 		MemoryCell operator[](std::vector<int> path) {
 			if(data_->getType()!=Types::ARRAY)
 				throw Type_error("That object is not massiv.");
 			auto tmp = std::dynamic_pointer_cast<Array>(data_);
-			return *(*tmp)[path];
+			MemoryCell res(*(*tmp)[path], true);
+			return res;
 		}
 		MemoryCell operator*() {
 			if(data_->getType()!=Types::POINTER)
 				throw Type_error("That object is not ukazatel.");
 			auto tmp = std::dynamic_pointer_cast<Pointer>(data_);
-			return **tmp;
+			MemoryCell res(**tmp, true);
+			return res;
 		}
 		static MemoryCell checkTypes(Types t1, Types t2) {
 			MemoryCell res;
@@ -208,8 +216,9 @@ namespace language {
 			return res;
 		}
 		virtual void operator=(std::shared_ptr<MemoryCell> mem) {
-			//throw Initial_error("rvalue expression can't change the value");
-			*data_ = (*mem).getData();
+			if(!lvalue)
+				throw Initial_error("rvalue expression can't change the value");
+			else *data_ = (*mem).getData();
 		}
 		~MemoryCell(){}
 	};
