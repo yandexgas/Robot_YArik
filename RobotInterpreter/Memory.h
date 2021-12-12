@@ -157,6 +157,8 @@ namespace language {
 				throw Type_error("That object is not yacheyka.");
 			MemoryCell result;
 			auto tmp = std::dynamic_pointer_cast<Square>(source.data_);
+			if (!tmp)
+				tmp = std::dynamic_pointer_cast<Square>(**std::dynamic_pointer_cast<Link>(source.data_));
 			MemoryCell res;
 			res.lvalue = true;
 			switch (field)
@@ -177,13 +179,17 @@ namespace language {
 			if(data_->getType()!=Types::ARRAY)
 				throw Type_error("That object is not massiv.");
 			auto tmp = std::dynamic_pointer_cast<Array>(data_);
-			MemoryCell res(*(*tmp)[path], true);
+			if (!tmp)
+				tmp = std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_));
+			MemoryCell res((*tmp)[path], true);
 			return res;
 		}
 		MemoryCell operator*() {
 			if(data_->getType()!=Types::POINTER)
 				throw Type_error("That object is not ukazatel.");
 			auto tmp = std::dynamic_pointer_cast<Pointer>(data_);
+			if (!tmp)
+				tmp = std::dynamic_pointer_cast<Pointer>(**std::dynamic_pointer_cast<Link>(data_));
 			MemoryCell res(**tmp, true);
 			return res;
 		}
@@ -239,6 +245,7 @@ namespace language {
 	class Variable :public MemoryCell, public NamedObject {	
 	public:
 		Variable(std::string name, MemoryCell& mem): MemoryCell(mem), NamedObject(name,true){}
+		Variable(std::string name, std::shared_ptr<Type> tp) : MemoryCell(tp), NamedObject(name,true){}
 		Variable(std::string name, Types type, bool ptr=false) :NamedObject(name,true), MemoryCell(nullptr) {
 			switch (type)
 			{

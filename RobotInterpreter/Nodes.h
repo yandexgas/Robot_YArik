@@ -329,18 +329,16 @@ namespace language {
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			auto r1 = children_->pass(mem);
-			std::vector<std::shared_ptr<MemoryCell>> r2;
+			std::vector<int> r2;
 			for (auto a : path_) {
 				auto tmp = a->pass(mem);
 				if (tmp)
-					r2.push_back(tmp.value());
+					r2.push_back((int)*(tmp.value()->getData()));
 				else throw SintaxTree_Exception("Incorrect array path.");
 			}
-			std::vector<int> ph;
-			ph.push_back((int)*(*r1.value()).getData());
 			if(!r1)
 				throw SintaxTree_Exception("Incorrect array.");
-			return std::make_shared<MemoryCell>((*r1.value())[ph]);
+			return std::make_shared<MemoryCell>((*r1.value())[r2]);
 		}
 		virtual ~ArrayIndaxation_expression() override{}
 	};
@@ -438,32 +436,30 @@ namespace language {
 
 	class ArrDecl :public Node {
 	private:
-		std::list<std::shared_ptr<language::Node>>* operLst_;
+		std::list<std::shared_ptr<language::Node>> operLst_;
 		std::string name_;
-		std::shared_ptr<Variable> var;
 	public:
-		ArrDecl(std::int16_t lino, std::string name, std::list<std::shared_ptr<language::Node>>* operLst) : Node(lino),operLst_(operLst) {
-			var = std::make_shared<Variable>(name, Types::SQUARE, false);
-			name_ = name;
+		ArrDecl(std::int16_t lino, std::string name, std::list<std::shared_ptr<language::Node>>* operLst) : Node(lino),operLst_(*operLst), name_(name) {
+			delete operLst;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			memTable_ = mem;
-			memTable_->insert(var);
 			std::vector<int> tmp;
-			for (auto a : *operLst_) {
+			for (auto a : operLst_) {
 				auto r = a->pass(mem);
 				if (r)
 					tmp.push_back((int)*(r.value()->getData()));
 				else
-					throw SintaxTree_Exception("Yacheyka initialization value expected.");
+					throw SintaxTree_Exception("Array initialization expected.");
 			}
+			auto arr = std::make_shared<Array>(tmp);
+			memTable_->insert(std::make_shared<Variable>( name_,arr));
 			return std::nullopt;
 		}
 		const std::string& getName() {
 			return name_;
 		}
 		virtual ~ArrDecl() override {
-			delete operLst_;
 		}
 	};
 
@@ -523,13 +519,15 @@ namespace language {
 
 	class Function_call :public Leaf {
 	private:
-		std::list<std::shared_ptr<language::Node>>* params_;
+		std::list<std::shared_ptr<language::Node>> params_;
 		std::string name_;
 	public:
-		Function_call(std::int16_t lino, std::string name, std::list<std::shared_ptr<language::Node>>* params) : Leaf(lino), params_(params), name_(name) {}
+		Function_call(std::int16_t lino, std::string name, std::list<std::shared_ptr<language::Node>>* params) : Leaf(lino), params_(*params), name_(name) {
+			delete params;
+		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			std::list<std::shared_ptr<MemoryCell>> tmp;
-			for(auto a: *params_){
+			for(auto a: params_){
 				if (a) {
 					auto tmp2 = a->pass(mem);
 					if (tmp2)
@@ -545,9 +543,7 @@ namespace language {
 			auto callList = fptr->getCall(fun.arg);
 			dynamic_cast<FunDeclaration_expression*>(fptr->getPtr())->funcCal(*callList);
 		}
-		virtual  ~Function_call() override {
-			delete params_;
-		};
+		virtual  ~Function_call() override {};
 	};
 
 	class Assigment_node :public Binary_expression {
@@ -559,7 +555,8 @@ namespace language {
 			if (r1 && r2)
 				*(r1.value()) = r2.value();
 			else throw SintaxTree_Exception("Incorrect operands in assigment expression");
-			return r1.value();
+			//return r1.value();
+			return std::nullopt;
 		}
 		virtual  ~Assigment_node() override {};
 	};

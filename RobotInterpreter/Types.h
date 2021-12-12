@@ -103,6 +103,7 @@ namespace language {
 	class Type {
 	public:
 		virtual const Types getType() const noexcept = 0;
+		virtual const Types getHideType() const noexcept { return getType(); }
 		virtual void operator=(std::shared_ptr<Type>) = 0;
 		virtual std::shared_ptr<Type> makeClone() const noexcept = 0;
 		explicit virtual operator int() {
@@ -114,6 +115,7 @@ namespace language {
 		explicit virtual operator bool() {
 			throw Type_error("This type can't be converted to logicheskoye.");
 		}
+
 		virtual ~Type(){}
 	};
 
@@ -221,26 +223,28 @@ namespace language {
 	class Link : public Type {
 	private:
 		std::shared_ptr<Type> pointer_;
+		bool inited = false;
+		virtual const Types getHideType() const noexcept override {
+			return Types::LINK;
+		}
 	public:
-		Link(std::shared_ptr<Type> ptr = nullptr) :pointer_(ptr) {};
+		Link(std::shared_ptr<Type> ptr = nullptr, bool init=true) :pointer_(ptr),inited(init) {};
 		operator std::shared_ptr<Type>() {
 			return pointer_;
 		}
 		Link(Link& lnk) {
 			pointer_ = lnk.pointer_->makeClone();
+			inited = lnk.inited;
 		};
+		//тут фигня, чуть позже изменю
 		Link(Link&& lnk)noexcept {
 			pointer_ = lnk.pointer_->makeClone();
+			inited = lnk.inited;
 		};
 		Link& operator=(Link& lnk) {
-			if (&lnk != this)
-				pointer_ = lnk.pointer_->makeClone();
-			return *this;
-		}
-		Link& operator=(Link&& lnk) noexcept {
 			if (&lnk != this) {
-				pointer_ = lnk.pointer_;
-				lnk.pointer_ = nullptr;
+				pointer_ = lnk.pointer_->makeClone();
+				inited = lnk.inited;
 			}
 			return *this;
 		}
@@ -251,20 +255,31 @@ namespace language {
 			return std::make_shared<Link>((*pointer_).makeClone());
 		}
 		virtual void operator=(std::shared_ptr<Type> a) override {
-			pointer_ = (*a).makeClone();
+			if (a->getHideType() != Types::LINK)
+				pointer_ = (*a).makeClone();
+			else
+				pointer_ = (**std::dynamic_pointer_cast<Link>(a))->makeClone();
+			inited = true;
 		}
 		virtual const Types getType() const noexcept {
-			return pointer_->getType();
+				return pointer_->getType();
 		}
 		explicit virtual operator int() override {
-			return (int)*pointer_;
+			if (inited)
+				return (int)*pointer_;
+			else throw Type_error("Non initiallized memory access.");
 		}
 		explicit virtual operator float() {
-			return (float)*pointer_;
+			if (inited)
+				return (float)*pointer_;
+			else throw Type_error("Non initiallized memory access.");
 		}
 		explicit virtual operator bool() {
-			return (bool)*pointer_;
+			if (inited)
+				return (bool)*pointer_;
+			else throw Type_error("Non initiallized memory access.");
 		}
+
 		virtual ~Link() override {}
 	};
 
@@ -364,6 +379,7 @@ namespace language {
 		virtual ~Square() override {}
 	};
 
+
 	class Array : public Type
 	{
 	private:
@@ -371,18 +387,20 @@ namespace language {
 		std::vector<std::shared_ptr<Link>> data_;
 		std::vector<int> dimensions_;
 	public:
-		explicit Array(std::vector<int> dimensions) : dimensions_(dimensions) {
+		explicit Array(std::vector<int>& dimensions) : dimensions_(dimensions) {
 			int mult=1;
 			for (auto i : dimensions_)
 				mult *= i;
 			if (mult < 0)
 				throw std::length_error("Too much elements in massiv");// Вообще тут еще сразу проверка и на нулевые элементы
 			for (int i = 0; i < mult; i++) {
-				data_.push_back(std::make_shared<Link> (std::static_pointer_cast<Type>(std::make_shared<Bool>())));
+				data_.push_back(std::make_shared<Link> (std::static_pointer_cast<Type>(std::make_shared<Bool>()),false));
 			}
 		}
 		Array(){}
-		Array(std::vector<int> dimensions, std::vector<std::shared_ptr<Link>> data) : dimensions_(dimensions), data_(data) {
+		Array(std::vector<int> dimensions, std::vector<std::shared_ptr<Link>> data) : dimensions_(dimensions) {
+			for (auto a : data) 
+				data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
 		}
 		Array(Array& arr) :dimensions_(arr.dimensions_){
 			for (size_t i = 0; i < arr.data_.size(); i++) {
@@ -421,7 +439,7 @@ namespace language {
 		size_t getDimensionality()const noexcept {
 			return dimensions_.size();
 		}
-		Link& operator[](std::vector<int>& path) {
+		std::shared_ptr<Link> operator[](std::vector<int>& path) {
 
 			if (path.size() != dimensions_.size())
 				throw std::out_of_range("Incorrect indexation.");
@@ -432,7 +450,7 @@ namespace language {
 				multi *= dimensions_[sz];
 				index += path[sz] * multi;
 			}
-			return *data_[index];
+			return data_[index];
 		}
 		virtual ~Array() override {}
 	};
