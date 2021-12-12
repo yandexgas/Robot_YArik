@@ -393,7 +393,7 @@ namespace language {
 				else
 					throw SintaxTree_Exception("value expected.");
 			}
-			return std::nullopt;
+			return var;
 		}
 		const std::string& getName() {
 			return name_;
@@ -453,7 +453,8 @@ namespace language {
 					throw SintaxTree_Exception("Array initialization expected.");
 			}
 			auto arr = std::make_shared<Array>(tmp);
-			memTable_->insert(std::make_shared<Variable>( name_,arr));
+			auto var = std::make_shared<Variable>(name_, arr);
+			memTable_->insert(var);
 			return std::nullopt;
 		}
 		const std::string& getName() {
@@ -555,8 +556,8 @@ namespace language {
 			if (r1 && r2)
 				*(r1.value()) = r2.value();
 			else throw SintaxTree_Exception("Incorrect operands in assigment expression");
-			//return r1.value();
-			return std::nullopt;
+			return r1.value();
+
 		}
 		virtual  ~Assigment_node() override {};
 	};
@@ -566,37 +567,27 @@ namespace language {
 		std::shared_ptr<Node> fst_conditon_;
 		std::shared_ptr<Node> last_conditon_;
 		std::shared_ptr<Node> loop_body_;
-		std::optional<std::string>name_;
 	public:
 		For_loop(std::int16_t lino, std::shared_ptr<Node> fst_conditon,
 			std::shared_ptr<Node> last_conditon,
 			std::shared_ptr<Node> loop_body, bool declaration=false) : Node(lino), fst_conditon_(fst_conditon), last_conditon_(last_conditon),
-			loop_body_(loop_body), name_({}) {
-			if (!fst_conditon || !last_conditon || !loop_body)
+			loop_body_(loop_body){
+			if (!fst_conditon || !last_conditon)
 				throw SintaxTree_Exception("incorrect tsikl declaration");
-			if(declaration)
-				name_ = std::dynamic_pointer_cast<VarDeclaration_expression>(fst_conditon_)->getName();
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			auto fst = fst_conditon_->pass(memTable_);
 			auto last = last_conditon_->pass(memTable_);
 			if (fst && last) {
-				if (!name_) {
-					int i = (int)*((fst.value())->getData());
-					int j = (int)*((last.value())->getData());
-					for (; i < j; i++) {
+				auto one = *std::make_shared<MemoryCell>(std::make_shared<Int>(1));
+				auto i = fst.value();
+				auto j = last.value();
+				auto jj = *j + one;
+				for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) +one )) {
+					if(loop_body_)
 						loop_body_->pass(memTable_);
 					}
-				}
-				else {
-					auto i = (*memTable_)[name_.value()];
-					auto j = last.value();
-					auto one = *std::make_shared<MemoryCell>(std::make_shared<Int>(1));
-					for (; (bool)*(((*i) < (*j)).getData()); (*i) = std::make_shared<MemoryCell>((*i) +one )) {
-						loop_body_->pass(memTable_);
-					}
-				}
 			}
 			memTable_->clear();
 			return std::nullopt;

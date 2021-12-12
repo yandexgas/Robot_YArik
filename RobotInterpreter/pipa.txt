@@ -1,4 +1,3 @@
-massiv a={2};
-ukazatel massiv b= adr a;
-a[0]=15;
-(*b)[1]=12;
+tseloye i =0;
+tseloye k;
+tsikl(tseloye i =2:5) nachalo i=i-1; konets 
