@@ -1,3 +1,3 @@
-tseloye i =0;
-tseloye k;
-tsikl(tseloye i =2:5) nachalo i=i-1; konets 
+funktsiya sum(tseloye x, ukazatel tseloye y) nachalo *y= x + *y; konets 
+tseloye x =5;
+sum(x,adr x);

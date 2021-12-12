@@ -403,9 +403,8 @@ namespace language {
 				data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
 		}
 		Array(Array& arr) :dimensions_(arr.dimensions_){
-			for (size_t i = 0; i < arr.data_.size(); i++) {
-				data_.push_back(std::make_shared<Link>(*arr.data_[i]));
-			}
+			for (auto a : arr.data_)
+				data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
 		}
 		Array(Array&& arr) noexcept {
 			data_ = std::move(arr.data_);
@@ -414,9 +413,8 @@ namespace language {
 		Array& operator=(Array& arr) {
 			if (&arr != this) {
 				dimensions_ = arr.dimensions_;
-				for (size_t i = 0; i < arr.data_.size(); i++) {
-					data_.push_back(std::make_shared<Link>(*arr.data_[i]));
-				}
+				for (auto a : arr.data_)
+					data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
 			}
 			return *this;
 		}

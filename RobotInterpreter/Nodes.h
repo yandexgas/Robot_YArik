@@ -474,40 +474,35 @@ namespace language {
 		std::optional<Types> tp_;
 		bool isPtr;
 	public:
-		FunDeclaration_expression(std::int16_t lino, std::string name, std::list<fparam> params, std::shared_ptr<Node> child, std::optional<Types> tp = {}, bool isPtr = false) : Node(lino),
-			body_(child),params_(params), tp_(tp), isPtr(isPtr) {
+		FunDeclaration_expression(std::int16_t lino, std::string name, std::list<fparam> params, std::shared_ptr<Node> child, std::optional<Types> tp = {}, bool isPtr = false) : Node(lino), 
+			name_(name), body_(child), params_(params), tp_(tp), isPtr(isPtr) {
 			fptr_ = std::make_shared<Function>(params, tp, isPtr);
 			fptr_->setPtr(this);		
 		}
-		std::optional<std::shared_ptr<MemoryCell>> funcCal(std::list <std::pair<const std::string*, std::shared_ptr<MemoryCell>>>& args) {
+		std::optional<std::shared_ptr<MemoryCell>> funcCal(std::list < std::shared_ptr<MemoryCell>>& args) {
 			std::shared_ptr<MemoryFrame> stackFrame = std::make_shared<MemoryFrame>(memTable_);
 			auto argsIter = args.begin();
 			for (auto a : params_) {
 				auto varAlloc = std::make_shared<Variable>(a.name, a.type, a.isPtr);
-				*varAlloc = ((*argsIter).second);
+				*varAlloc = (*argsIter++);
 				stackFrame->insert(varAlloc);
 			}
+			std::shared_ptr<Variable> result;
 			if (tp_) {
-				auto result = std::make_shared<Variable>("rezultat", tp_.value(), isPtr);
+				result = std::make_shared<Variable>("rezultat", tp_.value(), isPtr);
 				stackFrame->insert(result);
 			}
-			//for (auto a : params_) {
-			//	stackFrame->insert(std::make_shared<Variable>(a.name, a.type, a.isPtr));
-		//	}
-			//for (auto a : args) {
-			//	(*(*stackFrame)[*(a.first)]) = a.second;
-			//}
 			if (body_) {
-				auto tmp = body_->pass(stackFrame);
-				stackFrame->clear();
-				return tmp;
-			}
-			else
-			{
-				stackFrame->clear();
+				body_->pass(stackFrame);
 				if (tp_)
-					throw Call_error("Result value missed.");
+					return result;
+				else
+					return std::nullopt;
 			}
+			else if (tp_)
+				throw Call_error("Result value missed.");
+			else
+				return std::nullopt;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 
@@ -541,8 +536,7 @@ namespace language {
 			fun.name = name_;
 			fun.arg = tmp;
 			auto fptr = (*mem)[fun];
-			auto callList = fptr->getCall(fun.arg);
-			dynamic_cast<FunDeclaration_expression*>(fptr->getPtr())->funcCal(*callList);
+			return dynamic_cast<FunDeclaration_expression*>(fptr->getPtr())->funcCal(fun.arg);
 		}
 		virtual  ~Function_call() override {};
 	};
@@ -578,6 +572,7 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			auto fst = fst_conditon_->pass(memTable_);
+			int ff = 0;
 			auto last = last_conditon_->pass(memTable_);
 			if (fst && last) {
 				auto one = *std::make_shared<MemoryCell>(std::make_shared<Int>(1));
@@ -585,9 +580,11 @@ namespace language {
 				auto j = last.value();
 				auto jj = *j + one;
 				for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) +one )) {
-					if(loop_body_)
-						loop_body_->pass(memTable_);
+					if (loop_body_) {
+						auto mem2 = std::make_shared<MemoryFrame>(memTable_);
+						loop_body_->pass(mem2);
 					}
+				}
 			}
 			memTable_->clear();
 			return std::nullopt;
@@ -602,7 +599,7 @@ namespace language {
 	public:
 		While_loop(std::int16_t lino, std::shared_ptr<Node> conditon,
 		std::shared_ptr<Node> body_ ): Node(lino), conditon_(conditon), body_(body_){
-			if (!body_ || !conditon_) 
+			if (!conditon_) 
 				throw SintaxTree_Exception("incorrect tsikl declaration");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
@@ -610,9 +607,11 @@ namespace language {
 			try {
 				while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData()))
 				{
-					body_->pass(memTable_);
+					if (body_) {
+						body_->pass(memTable_);
+						memTable_->clear();
+					}
 				}
-				memTable_->clear();
 				return std::nullopt;
 			}
 			catch (std::bad_optional_access e) {
@@ -661,9 +660,9 @@ namespace language {
 			auto fst = ptr_->pass(mem);
 			if (fst) {
 				if (fst.value()->getData()->getType() != Types::POINTER&& fst.value()->isInMemory()) {
-					std::shared_ptr<std::shared_ptr<Type>> ptr = std::make_shared<std::shared_ptr<Type>>();
-					*ptr = fst.value()->getData();
-					std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(ptr);
+					//std::shared_ptr<std::shared_ptr<Type>> ptr = std::make_shared<std::shared_ptr<Type>>();
+					//*ptr = fst.value()->getData();
+					std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(fst.value()->getData());
 					return std::make_shared<MemoryCell>(tmp);
 				}
 				throw Type_error("Pointer to pointer undefined");

@@ -127,13 +127,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = more(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Bool>(to_type);
 				return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = more(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared<Bool>(to_type);
 				return result;
 			}
 		}
@@ -142,13 +142,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = less(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Bool>(to_type);
 				return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = less(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared<Bool>(to_type);
 				return result;
 			}
 		}
@@ -352,18 +352,7 @@ namespace language {
 			return true;
 			}
 		}
-		// ћне тут не очень нравитс€€ возврат по значению
-		std::unique_ptr<std::list<std::pair<const std::string*, std::shared_ptr<MemoryCell>>>> getCall (std::list < std::shared_ptr< MemoryCell> >& param) {
-			std::unique_ptr<std::list<std::pair<const std::string*, std::shared_ptr<MemoryCell>>>> callList_
-				=std::make_unique<std::list<std::pair<const std::string*, std::shared_ptr<MemoryCell>>>>();
-			auto b1 = params_.begin();
-			auto b2 = param.begin();
-			while (b1 != params_.end()) {
-				std::pair<const std::string*, std::shared_ptr<MemoryCell>> tmp = { &b1->name,*b2 };
-				callList_->push_back(tmp);
-			}
-			return callList_;
-		}
+
 
 	};
 
