@@ -444,9 +444,11 @@ namespace language {
 			if (path.size() != dimensions_.size())
 				throw std::out_of_range("Incorrect indexation.");
 			int sz = path.size() - 1;
-			size_t index = path[sz] > dimensions_[sz] ? throw std::out_of_range("Out of massive range.") : path[sz--];
+			size_t index = path[sz] >= dimensions_[sz] ? throw std::out_of_range("Out of massive range.") : path[sz--];
 
 			for (int multi = 1; sz >= 0; sz--) {
+				if (path[sz] >= dimensions_[sz])
+					throw std::out_of_range("Out of massive range.");
 				multi *= dimensions_[sz];
 				index += path[sz] * multi;
 			}
