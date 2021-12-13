@@ -1,10 +1,2 @@
-tseloye x = factor(12);
-tseloye funktsiya factor( tseloye x) nachalo 
-	esli(~(x>0||x<0))
-		rezultat= 1;
-	inache
-		rezultat = factor(x-1)*x;
-konets
-
-
+logicheskoye x = (0||5)&&1;
 

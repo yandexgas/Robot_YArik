@@ -154,11 +154,18 @@ namespace language {
 		Disjunction_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) || *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of || has been missed");
+
+			if (r1 && !(bool)*(r1.value()->getData())) {
+				auto r2 = children_[1]->pass(mem);
+				if (r2)
+					return std::make_shared<MemoryCell>(*(r2.value()));
+				else
+					throw SintaxTree_Exception("One of operands of || has been missed");
+			}
+
+			else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
+
+			else	throw SintaxTree_Exception("One of operands of || has been missed");
 		}
 		virtual ~Disjunction_expression() override {}
 	};
@@ -168,11 +175,16 @@ namespace language {
 		Conjunction_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) && *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of && has been missed");
+			if (r1 && (bool)*(r1.value()->getData())) {
+				auto r2 = children_[1]->pass(mem);
+				if (r2)
+					return std::make_shared<MemoryCell>( *(r2.value()));
+				else
+					throw SintaxTree_Exception("One of operands of && has been missed");
+			}
+			else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
+
+			else	throw SintaxTree_Exception("One of operands of && has been missed");
 		}
 		virtual ~Conjunction_expression() override {}
 	};
