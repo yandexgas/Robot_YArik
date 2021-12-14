@@ -156,9 +156,9 @@ namespace language {
 			if (source.data_->getType() != Types::SQUARE)
 				throw Type_error("That object is not yacheyka.");
 			MemoryCell result;
-			auto tmp = std::dynamic_pointer_cast<Square>(source.data_);
-			if (!tmp)
-				tmp = std::dynamic_pointer_cast<Square>(**std::dynamic_pointer_cast<Link>(source.data_));
+			auto tmp = source.data_->getHideType() == Types::LINK ?
+				std::dynamic_pointer_cast<Square>(**std::dynamic_pointer_cast<Link>(source.data_)) :
+				std::dynamic_pointer_cast<Square>(source.data_);
 			MemoryCell res;
 			res.lvalue = true;
 			switch (field)
@@ -178,18 +178,18 @@ namespace language {
 		MemoryCell operator[](std::vector<int> path) {
 			if(data_->getType()!=Types::ARRAY)
 				throw Type_error("That object is not massiv.");
-			auto tmp = std::dynamic_pointer_cast<Array>(data_);
-			if (!tmp)
-				tmp = std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_));
+			auto tmp = data_->getHideType() == Types::LINK ?
+				std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
+				std::dynamic_pointer_cast<Array>(data_);
 			MemoryCell res((*tmp)[path], true);
 			return res;
 		}
 		MemoryCell operator*() {
 			if(data_->getType()!=Types::POINTER)
 				throw Type_error("That object is not ukazatel.");
-			auto tmp = std::dynamic_pointer_cast<Pointer>(data_);
-			if (!tmp)
-				tmp = std::dynamic_pointer_cast<Pointer>(**std::dynamic_pointer_cast<Link>(data_));
+			auto tmp = data_->getHideType() == Types::LINK ?
+				std::dynamic_pointer_cast<Pointer>(**std::dynamic_pointer_cast<Link>(data_)) :
+				std::dynamic_pointer_cast<Pointer>(data_);
 			MemoryCell res(**tmp, true);
 			return res;
 		}
@@ -216,7 +216,9 @@ namespace language {
 		MemoryCell arrayDimension() {
 			if(data_->getType()!=Types::ARRAY)
 				throw Type_error("That object is not massiv.");
-			auto tmp = std::dynamic_pointer_cast<Array>(data_);
+			auto tmp = data_->getHideType() == Types::LINK ?
+				std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
+				std::dynamic_pointer_cast<Array>(data_);
 			MemoryCell res;
 			res.data_ = std::make_shared<Int>(tmp->getDimensionality());
 			return res;
