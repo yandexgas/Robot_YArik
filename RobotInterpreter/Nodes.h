@@ -34,7 +34,7 @@ namespace language {
 		std::shared_ptr<MemoryCell> value_;
 	public:
 		Liter_int(int val, std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Int>(val));
+			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<int>>(val, Types::INT));
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override {return value_;}
 		virtual  ~Liter_int() override {};
@@ -45,7 +45,7 @@ namespace language {
 		std::shared_ptr<MemoryCell> value_;
 	public:
 		Liter_float(float val,std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Float>(val));
+			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<float>>(val, Types::FLOAT));
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
 		virtual  ~Liter_float() override {};
@@ -56,7 +56,7 @@ namespace language {
 		std::shared_ptr<MemoryCell> value_;
 	public:
 		Liter_bool(bool val,std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Bool>(val));
+			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<bool>>(val, Types::BOOL));
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
 		virtual  ~Liter_bool() override {};
@@ -593,7 +593,7 @@ namespace language {
 			int ff = 0;
 			auto last = last_conditon_->pass(memTable_);
 			if (fst && last) {
-				auto one = *std::make_shared<MemoryCell>(std::make_shared<Int>(1));
+				auto one = *std::make_shared<MemoryCell>(std::make_shared<Math_type<int>>(1,Types::INT));
 				auto i = fst.value();
 				auto j = last.value();
 				auto jj = *j + one;

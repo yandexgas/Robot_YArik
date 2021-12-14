@@ -37,13 +37,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = sum(data_, val.data_, to_type);
-				result.data_= std::make_shared<Float>(to_type);
+				result.data_= std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
 				return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = sum(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
 				return result;
 			}
 		}
@@ -52,13 +52,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = sub(data_, val.data_, to_type);
-				 result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
 				 return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = sub(data_, val.data_, to_type);
-				 result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
 				 return result;
 			}
 		}
@@ -67,13 +67,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = mul(data_, val.data_, to_type);
-				 result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
 				 return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = mul(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
 				return result;
 			}
 		}
@@ -82,13 +82,13 @@ namespace language {
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
 				to_type = div(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
 				return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = div(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
 				return result;
 			}
 		}
@@ -97,43 +97,43 @@ namespace language {
 			if (isFloating(data_->getType())) {
 				float to_type = 0;
 				to_type = uminus(data_, to_type);
-				 result.data_ = std::make_shared<Float>(to_type);
+				result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
 				 return result;
 			}
 			else {
 				int to_type = 0;
 				to_type = uminus(data_, to_type);
-				 result.data_ = std::make_shared<Int>(to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
 				 return result;
 			}
 		}
 		MemoryCell operator~() {
 			MemoryCell result;
-				 result.data_ = std::make_shared<Bool>(invers(data_));
+				 result.data_ = std::make_shared< Math_type<bool>>(invers(data_), Types::BOOL);
 				 return result;
 		}
 		MemoryCell operator||(MemoryCell val) {
 			MemoryCell result;
-			 result.data_ = std::make_shared<Bool>(Or(data_,val.data_));
+			 result.data_ = std::make_shared< Math_type<bool>>(Or(data_,val.data_), Types::BOOL);
 			 return result;
 		}
 		MemoryCell operator&&(MemoryCell val) {
 			MemoryCell result;
-			result.data_ = std::make_shared<Bool>(And(data_, val.data_));
+			result.data_ = std::make_shared< Math_type<bool>>(And(data_, val.data_), Types::BOOL);
 			return result;
 		}
 		MemoryCell operator>(MemoryCell val) {
 			MemoryCell result;
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
-				to_type = more(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Bool>(to_type);
+				bool rs= more(data_, val.data_, to_type);
+				result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
 				return result;
 			}
 			else {
 				int to_type = 0;
-				to_type = more(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Bool>(to_type);
+				bool rs = more(data_, val.data_, to_type);
+				result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
 				return result;
 			}
 		}
@@ -141,14 +141,14 @@ namespace language {
 			MemoryCell result;
 			if (isFloating(data_->getType(), val.data_->getType())) {
 				float to_type = 0;
-				to_type = less(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Bool>(to_type);
+				bool rs = less(data_, val.data_, to_type);
+				result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
 				return result;
 			}
 			else {
 				int to_type = 0;
-				to_type = less(data_, val.data_, to_type);
-				result.data_ = std::make_shared<Bool>(to_type);
+				bool rs = less(data_, val.data_, to_type);
+				result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
 				return result;
 			}
 		}
@@ -195,22 +195,22 @@ namespace language {
 		}
 		static MemoryCell checkTypes(Types t1, Types t2) {
 			MemoryCell res;
-			res.data_= std::make_shared<Bool>(t1 == t2);
+			res.data_=std::make_shared< Math_type<bool>>(t1 == t2, Types::BOOL);
 			return res;
 		}
 		static MemoryCell checkTypes(MemoryCell t1, Types t2) {
 			MemoryCell res;
-			res.data_ = std::make_shared<Bool>(t1.data_->getType() == t2);
+			res.data_ = std::make_shared< Math_type<bool>>(t1.data_->getType() == t2, Types::BOOL);
 			return res;
 		}
 		static MemoryCell checkTypes(Types t1, MemoryCell t2) {
 			MemoryCell res;
-			res.data_ = std::make_shared<Bool>(t1== t2.data_->getType());
+			res.data_ = std::make_shared< Math_type<bool>>(t1== t2.data_->getType(), Types::BOOL);
 			return res;
 		}
 		static MemoryCell checkTypes (MemoryCell t1, MemoryCell t2) {
 			MemoryCell res;
-			res.data_ = std::make_shared<Bool>(t1.data_->getType() == t2.data_->getType());
+			res.data_ = std::make_shared< Math_type<bool>>(t1.data_->getType() == t2.data_->getType(), Types::BOOL);
 			return res;
 		}
 		MemoryCell arrayDimension() {
@@ -220,7 +220,7 @@ namespace language {
 				std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
 				std::dynamic_pointer_cast<Array>(data_);
 			MemoryCell res;
-			res.data_ = std::make_shared<Int>(tmp->getDimensionality());
+			res.data_ = std::make_shared< Math_type<int>>(tmp->getDimensionality(), Types::INT);
 			return res;
 		}
 		virtual void operator=(std::shared_ptr<MemoryCell> mem) {
@@ -230,6 +230,7 @@ namespace language {
 		}
 		~MemoryCell(){}
 	};
+
 	class NamedObject {
 	protected:
 		std::string name_;
@@ -255,17 +256,19 @@ namespace language {
 				data_ = std::make_shared<Array>();
 				break;
 			case Types::INT:
-				data_ = std::make_shared<Int>();
+				data_ =std::make_shared< Math_type<int>>(Types::INT);
 				break;
 			case Types::FLOAT:
-				data_ = std::make_shared<Float>();
+				data_ = std::make_shared< Math_type<float>>(Types::FLOAT);
 				break;
 			case Types::BOOL:
-				data_ = std::make_shared<Bool>();
+				data_ = std::make_shared< Math_type<bool>>(Types::BOOL);
 				break;
 			case Types::SQUARE:
 				data_ = std::make_shared<Square>();
 				break;
+			case Types::BYTE:
+				data_ = std::make_shared<Math_type<char>>(Types::BYTE);
 			default:
 				break;
 			}

@@ -13,7 +13,8 @@ namespace language {
 		ARRAY,
 		SQUARE,
 		LINK,
-		POINTER
+		POINTER,
+		BYTE
 	};
 	enum class YFields
 	{
@@ -41,24 +42,12 @@ namespace language {
 			|| like_float<T>;
 	};
 	template <typename T>
-	concept is_float = requires(T v, int i) {
-		{v}  -> std::same_as<float>;
-	};
-	template <typename T>
-	concept is_Int = requires(T v, int i) {
-		{v}  -> std::same_as<int>;
-	};
-	template <typename T>
-	concept is_Bool = requires(T v, int i) {
-		{v}  -> std::same_as<bool>;
-	};
-	template <typename T>
 	concept Ariphmetical_result = requires {
-		is_Bool<T>
-			|| is_Int<T>
-			|| is_float<T>;
+		std::same_as<bool, T>
+			|| std::same_as<float, T>
+			|| std::same_as<char,T>
+			|| std::same_as<int, T>;
 	};
-
 
 	template < Ariphmetical T, Ariphmetical U, Ariphmetical_result Z>
 	Z sum(T u, U t, Z) {
@@ -115,28 +104,34 @@ namespace language {
 		explicit virtual operator bool() {
 			throw Type_error("This type can't be converted to logicheskoye.");
 		}
-
+		explicit virtual operator char() {
+			throw Type_error("This type can't be converted to logicheskoye.");
+		}
 		virtual ~Type(){}
 	};
 
-	class Int : public Type
-	{
+	template<Ariphmetical_result T>
+	class Math_type:public Type {
 	private:
-		static const Types type = Types::INT;
-		std::int32_t value_;
+		const Types type;
+		T value_;
 	public:
-		Int() :value_(0) {};
-		Int(std::int32_t value): value_(value){}
-		Int(Int& v) : value_(v.value_) {}
-		Int& operator=(std::int32_t val) {
+		Math_type(Types tp) : value_(0), type(tp) {  };
+		Math_type(T value, Types tp) : value_(value), type(tp) {}
+		Math_type(Math_type<T>& v) : value_(v.value_), type(v.type) {}
+		Math_type& operator=(T val) {
 			value_ = val;
 			return *this;
 		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override  {
-			return std::make_shared<Int>(value_);
+		Math_type& operator= (Math_type<T>& v) {
+			value_ = v.value_;
+			return *this;
+		}
+		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+			return std::make_shared<Math_type<T>>(value_, type);
 		}
 		virtual void operator=(std::shared_ptr<Type> a) {
-			value_ = (int)*a;
+			value_ = (T)*a;
 		}
 		virtual operator int()override {
 			return value_;
@@ -150,76 +145,12 @@ namespace language {
 		virtual const Types getType() const noexcept override {
 			return type;
 		}
-		virtual ~Int() override{}
+		explicit virtual operator char() {
+			return value_;
+		}
+		virtual ~Math_type() override {}
 	};
-
-	class Float : public Type
-	{
-	private:
-		static const Types type = Types::FLOAT;
-		float value_;
-	public:
-		Float() :value_(0) {};
-		Float (float value) : value_(value) {}
-		Float(Float& v) : value_(v.value_) {}
-		Float& operator=(float val) {
-			value_ = val;
-			return *this;
-		}
-		virtual const Types getType() const noexcept override {
-			return type;
-		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override  {
-			return std::make_shared<Float>(value_);
-		}
-		virtual void operator=(std::shared_ptr<Type> a) {
-			value_ = (float)*a;
-		}
-		virtual operator float() override {
-			return value_;
-		}
-		explicit virtual operator int()override {
-			return value_;
-		}
-		explicit virtual operator bool()override {
-			return value_;
-		}
-		virtual ~Float() override {}
-	};
-
-	class Bool : public Type
-	{
-	private:
-		static const Types type = Types::BOOL;
-		bool value_;
-	public:
-		Bool () : value_(0) {};
-		Bool(bool value) : value_(value) {}
-		Bool(Bool& v) : value_(v.value_) {}
-		Bool& operator=(bool val) {
-			value_ = val;
-			return *this;
-		}
-		virtual const Types getType() const noexcept override {
-			return type;
-		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
-			return std::static_pointer_cast<Type>(std::make_shared<Bool>(value_));
-		}
-		virtual void operator=(std::shared_ptr<Type> a) {
-			value_ = (bool)*a;
-		}
-		explicit virtual operator float() override {
-			return value_;
-		}
-		explicit virtual operator int()override {
-			return value_;
-		}
-		virtual operator bool()override {
-			return value_;
-		}
-		virtual ~Bool() override {}
-	};
+	
 	class Link : public Type {
 	private:
 		std::shared_ptr<Type> pointer_;
@@ -264,6 +195,7 @@ namespace language {
 		virtual const Types getType() const noexcept {
 				return pointer_->getType();
 		}
+
 		explicit virtual operator int() override {
 			if (inited)
 				return (int)*pointer_;
@@ -277,6 +209,11 @@ namespace language {
 		explicit virtual operator bool() {
 			if (inited)
 				return (bool)*pointer_;
+			else throw Type_error("Non initiallized memory access.");
+		}
+		explicit virtual operator char() {
+			if (inited)
+				return (char)*pointer_;
 			else throw Type_error("Non initiallized memory access.");
 		}
 
@@ -309,7 +246,7 @@ namespace language {
 				ptr_ = tmp;
 			}
 			else
-				**ptr_ = ptr;
+				throw Type_error("Type can not be converted to pointer");
 		}
 		virtual std::shared_ptr<Type> makeClone() const noexcept override {
 
@@ -333,13 +270,21 @@ namespace language {
 	{
 	private:
 		static const Types type = Types::SQUARE;
-		std::shared_ptr<Int> X_;
-		std::shared_ptr<Int> Y_;
-		std::shared_ptr<Bool> busy_;
+		std::shared_ptr< Math_type<int>> X_;
+		std::shared_ptr< Math_type<int >> Y_;
+		std::shared_ptr< Math_type<bool>> busy_;
 	public:
-		Square() : X_(std::make_shared<Int>(0)), Y_((std::make_shared<Int>(0))), busy_((std::make_shared<Bool>(false))) {};
-		Square(std::int32_t x, std::int32_t y, bool busy) : X_((std::make_shared<Int>(x))), Y_((std::make_shared<Int>(y))), busy_((std::make_shared<Bool>(busy))) {}
-		Square(Square& v) : X_((std::make_shared<Int>(*v.X_))), Y_((std::make_shared<Int>(*v.Y_))), busy_((std::make_shared<Bool>(*v.busy_))) {}
+		Square() : X_(std::make_shared<Math_type<int>>(Types::INT)),
+			Y_(std::make_shared<Math_type<int>>(Types::INT)), 
+			busy_(std::make_shared<Math_type<bool>>(Types::BOOL)) {};
+
+		Square(std::int32_t x, std::int32_t y, bool busy) : X_(std::make_shared<Math_type<int>>(x, Types::INT)),
+			Y_(std::make_shared<Math_type<int>>(y, Types::INT)),
+			busy_(std::make_shared<Math_type<bool>>(busy, Types::BOOL)) {}
+
+		Square(Square& v) : X_(std::make_shared<Math_type<int>>(*v.X_, Types::INT)),
+			Y_(std::make_shared<Math_type<int>>(*v.Y_, Types::INT)), 
+			busy_(std::make_shared<Math_type<bool>>(*v.busy_, Types::BOOL)) {}
 		Square& operator=(Square val) {
 			*X_ = *(val.X_);
 			*Y_ = *(val.Y_);
@@ -394,7 +339,7 @@ namespace language {
 			if (mult < 0)
 				throw std::length_error("Too much elements in massiv");// Вообще тут еще сразу проверка и на нулевые элементы
 			for (int i = 0; i < mult; i++) {
-				data_.push_back(std::make_shared<Link> (std::static_pointer_cast<Type>(std::make_shared<Bool>()),false));
+				data_.push_back(std::make_shared<Link>(std::make_shared<Math_type<char>>(Types::BYTE),false));
 			}
 		}
 		Array(){}
@@ -472,6 +417,9 @@ namespace language {
 			case language::Types::BOOL:
 				return true;
 				break;
+			case language::Types::BYTE:
+				return true;
+				break;
 			default:
 				return false;
 				break;
@@ -491,6 +439,9 @@ namespace language {
 			case language::Types::BOOL:
 				return true;
 				break;
+			case language::Types::BYTE:
+				return true;
+				break;
 			default:
 				return false;
 				break;
@@ -507,6 +458,30 @@ namespace language {
 				return true;
 				break;
 			case language::Types::BOOL:
+				return true;
+				break;
+			case language::Types::BYTE:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+			}
+		}
+			break;
+		case language::Types::BYTE: {
+			switch (t2)
+			{
+			case language::Types::INT:
+				return true;
+				break;
+			case language::Types::FLOAT:
+				return true;
+				break;
+			case language::Types::BOOL:
+				return true;
+				break;
+			case language::Types::BYTE:
 				return true;
 				break;
 			default:
