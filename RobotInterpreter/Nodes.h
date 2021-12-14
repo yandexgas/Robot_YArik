@@ -28,40 +28,33 @@ namespace language {
 		virtual  ~Leaf() override {};
 	};
 
-
-	class Liter_int :public Leaf {
+	template <Ariphmetical_result T>
+	class Literal:public Leaf {
 	private:
 		std::shared_ptr<MemoryCell> value_;
 	public:
-		Liter_int(int val, std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<int>>(val, Types::INT));
-		}
-		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override {return value_;}
-		virtual  ~Liter_int() override {};
-	};
-
-	class Liter_float :public Leaf {
-	private:
-		std::shared_ptr<MemoryCell> value_;
-	public:
-		Liter_float(float val,std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<float>>(val, Types::FLOAT));
+		Literal(T val,Types t, std::int16_t lino) : Leaf(lino) {
+			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<T>>(val, t));
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
-		virtual  ~Liter_float() override {};
+		virtual  ~Literal() override {};
 	};
 
-	class Liter_bool :public Leaf {
+	class constString : public Leaf {
 	private:
 		std::shared_ptr<MemoryCell> value_;
 	public:
-		Liter_bool(bool val,std::int16_t lino) : Leaf(lino) {
-			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<bool>>(val, Types::BOOL));
+		constString(std::string str, std::int16_t lino) : Leaf(lino) {
+			std::vector<int> dim;
+			dim.push_back(str.length()+1);
+			auto res = std::make_shared<Array>(dim);
+			for (int i = 0; i < str.length(); i++)
+				*(res->getDataLink()[i]) = std::make_shared<Math_type<char>>(str[i], Types::BYTE);
+			*(res->getDataLink()[str.length()]) = std::make_shared<Math_type<char>>(0, Types::BYTE);
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
-		virtual  ~Liter_bool() override {};
 	};
-	
+
 	class Var :public Leaf {
 	private:
 		std::string name;

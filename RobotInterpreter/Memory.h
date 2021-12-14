@@ -330,7 +330,7 @@ namespace language {
 			for (auto i = params_.begin(); i != params_.end(); i++, j++) {
 				if ((*i).isPtr == ((*j)->data_->getType() == Types::POINTER)) {
 					if ((*i).isPtr) {
-						if ((*i).type != (*(*j)->data_).getType())
+						if ((*i).type != (**std::dynamic_pointer_cast<Pointer>((*j)->data_))->getType())
 							return false;
 					}
 					else if ((*i).type != (*j)->data_->getType())
@@ -347,7 +347,7 @@ namespace language {
 			for (auto i = params_.begin(); i != params_.end(); i++, j++) {
 				if ((*i).isPtr == ((*j)->data_->getType() == Types::POINTER)) {
 					if ((*i).isPtr) {
-						if (!convertableTypes((*i).type, (*(*j)->data_).getType()))
+						if ((*i).type != (**std::dynamic_pointer_cast<Pointer>((*j)->data_))->getType())
 							return false;
 					}
 					else if (!convertableTypes((*i).type, (*j)->data_->getType()))
@@ -409,6 +409,7 @@ namespace language {
 			}
 			localMemory_[var->getName()] = var;
 		}
+
 		void insert(std::string name,std::shared_ptr<Function> f) {
 			if (localMemory_.contains(name)&& !(localMemory_[name]->isVariable())) {
 				auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[name]);
@@ -418,6 +419,7 @@ namespace language {
 				localMemory_[name] = std::make_shared<FunctionList>(name, f);
 			}
 		}
+
 		std::shared_ptr<Variable> operator[](std::string name) {
 			if (localMemory_.contains(name) && localMemory_[name]->isVariable())
 				return std::static_pointer_cast<Variable>(localMemory_[name]);

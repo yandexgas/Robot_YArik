@@ -42,48 +42,51 @@
      INTNUM = 258,
      FLOATNUM = 259,
      ISTINO = 260,
-     TSELOYE = 261,
-     DROBNOYE = 262,
-     LOGICHESKOYE = 263,
-     YACHEYKA = 264,
-     MASSIV = 265,
-     PTR = 266,
-     name = 267,
-     FOR = 268,
-     WHILE = 269,
-     IF = 270,
-     IFX = 271,
-     ELSE = 272,
-     BEGIN_ = 273,
-     END = 274,
-     RAZMER = 275,
-     PROVERKA = 276,
-     OR = 277,
-     AND = 278,
-     IDI = 279,
-     POVERNI = 280,
-     VZLETI = 281,
-     OSTANOV = 282,
-     GDEYA = 283,
-     SMOTRI = 284,
-     ARROW = 285,
-     PERED = 286,
-     ZAD = 287,
-     PRAVO = 288,
-     LEVO = 289,
-     FUNC = 290,
-     VCLUCHIT = 291,
-     FILEPATH = 292,
-     PECHAT = 293,
-     CHITAT = 294,
-     UMINUS = 295,
-     ADR = 296,
-     FIELD_OPER = 297,
-     STAR = 298
+     CHAR = 261,
+     CONSTSTRING = 262,
+     TSELOYE = 263,
+     DROBNOYE = 264,
+     LOGICHESKOYE = 265,
+     YACHEYKA = 266,
+     MASSIV = 267,
+     PTR = 268,
+     SIMVOL = 269,
+     name = 270,
+     FOR = 271,
+     WHILE = 272,
+     IF = 273,
+     IFX = 274,
+     ELSE = 275,
+     BEGIN_ = 276,
+     END = 277,
+     RAZMER = 278,
+     PROVERKA = 279,
+     OR = 280,
+     AND = 281,
+     IDI = 282,
+     POVERNI = 283,
+     VZLETI = 284,
+     OSTANOV = 285,
+     GDEYA = 286,
+     SMOTRI = 287,
+     ARROW = 288,
+     PERED = 289,
+     ZAD = 290,
+     PRAVO = 291,
+     LEVO = 292,
+     FUNC = 293,
+     VCLUCHIT = 294,
+     FILEPATH = 295,
+     PECHAT = 296,
+     CHITAT = 297,
+     UMINUS = 298,
+     ADR = 299,
+     FIELD_OPER = 300,
+     STAR = 301
    };
 #endif
 
-#include"Nodes.h"
+#include "Nodes.h"
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
@@ -106,11 +109,12 @@ language::Square* square;
 std::list<std::shared_ptr<language::Node>>* operands_;
 std::list<language::fparam>* params_;
 language::fparam* fparam_;
+char ch_
 
 
 
 /* Line 1676 of yacc.c  */
-#line 114 "grammar.tab.h"
+#line 118 "grammar.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

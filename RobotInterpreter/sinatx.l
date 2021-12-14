@@ -22,6 +22,8 @@ void yyerror(const char*);
 				return DROBNOYE;}
 (logicheskoye)/[^a-zA-Z0-9_] {yylval.types_= language::Types::BOOL;
 				return LOGICHESKOYE;}
+(simvol)/[^a-zA-Z0-9_] {yylval.types_= language::Types::BYTE;
+				return SIMVOL;}
 (yacheyka)/[^a-zA-Z0-9_] {yylval.types_= language::Types::SQUARE;
 				return YACHEYKA;}
 (massiv)/[^a-zA-Z0-9_] {yylval.types_= language::Types::ARRAY;
@@ -59,6 +61,16 @@ void yyerror(const char*);
 (adr)/[^a-zA-Z0-9_] {return ADR;}
 (=>) {return FIELD_OPER;}
 [<=>+/\-*~\[\],\(\);\{\}:] {return *yytext;}
+'[^']' {yylval.ch_=*(yytext+1);
+	return CHAR;}
+'\\n' {yylval.ch_='\n';
+	return CHAR;}
+'\\t' {yylval.ch_='\t';
+	return CHAR;}
+'\\0' {yylval.ch_='\0';
+	return CHAR;}
+\"[^\"]*\" {yylval.string = new std::string(yytext+1);
+	return CONSTSTRING;}
 [a-zA-Z_][a-zA-Z_0-9]* {yylval.string=new std::string(yytext);
 			return name;}
 

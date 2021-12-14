@@ -150,7 +150,6 @@ namespace language {
 		}
 		virtual ~Math_type() override {}
 	};
-	
 	class Link : public Type {
 	private:
 		std::shared_ptr<Type> pointer_;
@@ -260,10 +259,7 @@ namespace language {
 		std::shared_ptr<Type> operator*() {
 			return *ptr_;
 		}
-		virtual ~Pointer() {
-			//			if(ptr_)
-					//	delete ptr_;
-		}
+		virtual ~Pointer() {}
 	};
 
 	class Square : public Type
@@ -369,6 +365,9 @@ namespace language {
 				dimensions_ = std::move(arr.dimensions_);
 			}
 			return *this;
+		}
+		std::vector<std::shared_ptr<Link>>& getDataLink() {
+			return data_;
 		}
 		virtual const Types getType() const noexcept override {
 			return type;

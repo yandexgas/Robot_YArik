@@ -1,7 +1,7 @@
 %{
 	#include "Nodes.h"
 	using namespace language;
-	std::shared_ptr<Node>* root;
+	std::shared_ptr<Statement_list>* root;
 	int yylex(void);
 	void yyerror (const char*);
 %}
@@ -21,10 +21,11 @@ language::Square* square;
 std::list<std::shared_ptr<language::Node>>* operands_;
 std::list<language::fparam>* params_;
 language::fparam* fparam_;
+char ch_;
 }
 
-%token <ival> INTNUM <fval> FLOATNUM <bval> ISTINO
-%token <types_> TSELOYE <types_> DROBNOYE <types_> LOGICHESKOYE <types_> YACHEYKA <types_> MASSIV PTR
+%token <ival> INTNUM <fval> FLOATNUM <bval> ISTINO <ch_> CHAR <string> CONSTSTRING
+%token <types_> TSELOYE <types_> DROBNOYE <types_> LOGICHESKOYE <types_> YACHEYKA <types_> MASSIV PTR <types_> SIMVOL
 %token <string> name
 %token FOR WHILE IF
 %nonassoc IFX
@@ -148,7 +149,7 @@ fdecl:
 
 	| PTR type FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<FunDeclaration_expression>(1,*$4,*$5,*$7,$2,true);
-					delete $4); delete $5; delete $7;}
+					delete $4; delete $5; delete $7;}
 
 	| FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<FunDeclaration_expression>(1,*$2,*$3,*$5);
@@ -214,7 +215,7 @@ arg:
 
 stmt_lst:
 	stmt {$$=new std::shared_ptr<language::Statement_list>();
-		*$$=std::make_shared<language::Statement_list>(*$1);
+		*$$=std::make_shared<language::Statement_list>(1,*$1);
 		delete $1;} 
 	| stmt_lst stmt {*$1.addStatement($2);
 			$$=$1;
@@ -223,13 +224,18 @@ stmt_lst:
 
 expr:
 	INTNUM {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Liter_int>($1,1);}
+		*$$=std::make_shared<Literal<int>>($1,language::Types::INT,1);}
 
 	| FLOATNUM {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Liter_float>($1,1);}
+		*$$=std::make_shared<Literal<float>>($1,language::Types::FLOAT,1);}
 
 	| ISTINO {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Liter_bool>($1,1);}
+		*$$=std::make_shared<Literal<bool>>($1,language::Types::BOOL,1);}
+	| CHAR	{$$=new std::shared_ptr<Node>();
+		*$$=std::make_shared<Literal<char>>($1,language::Types::BYTE,1);}
+	| CONSTSTRING {$$=new std::shared_ptr<Node>();
+		*$$=std::make_shared<constString>(*$1,1);
+		delete $1;}
 
 	| name {$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<Var>(*$1,1);
@@ -326,7 +332,7 @@ check:
 	| PROVERKA expr PTR type {/*пока не до этого*/}
 	| PROVERKA type expr  {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<TypeCheck_expression>(1,$2,*$3);
+		*$$=std::make_shared<TypeCheck_expression>(1,*$3,$2);
 		delete $3;
 		}
 	| PROVERKA PTR type expr {/*пока не до этого*/}
@@ -344,6 +350,7 @@ type:
 	| LOGICHESKOYE {$$=$1;} 
 	| YACHEYKA {$$=$1;}
 	| MASSIV {$$=$1;}
+	| SIMVOL {$$=$1;}
 	;
 
 
@@ -380,7 +387,7 @@ std::cout<<str<<std::endl;
 
 void main(){
  
-// yydebug = 300;
+ //yydebug = 300;
  for(int i=0;i<1500000; i++){
  fopen_s(&yyin, "pipa.txt", "r");
     yyparse();

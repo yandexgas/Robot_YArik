@@ -1,11 +1,16 @@
-tseloye x = factor(12);
-ukazatel tseloye k;
-k= adr x;
-k=*k/2001;
-tseloye funktsiya factor( tseloye x) nachalo 
-	esli(~(x>0||x<0))
-		rezultat= 1;
-	inache
-		rezultat = factor(x-1)*x;
+funktsiya f( ukazatel simvol i) nachalo
+	esli(*i<0) nachalo
+	*i= 1;
+	f(i, *i);
+	konets
+funktsiya f (ukazatel simvol a, simvol i) nachalo
+	*a=f(i)+1;
+simvol	funktsiya f(simvol i) nachalo
+	f(adr i);
+	rezultat = i+1;
+konets
+konets
 konets
 
+simvol i = -1;
+f(adr i);
