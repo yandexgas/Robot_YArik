@@ -677,13 +677,15 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			auto fst = ptr_->pass(mem);
 			if (fst) {
-				if (fst.value()->getData()->getType() != Types::POINTER && fst.value()->isInMemory()) {
+				if (fst.value()->getData()->getType() != Types::POINTER 
+					&& fst.value()->isInMemory()
+					&& fst.value()->getData()->getHideType()!=Types::LINK) {
 
 					std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(fst.value()->getData());
 					return std::make_shared<MemoryCell>(tmp);
 				}
 				else if (fst.value()->isInMemory())
-					throw Type_error("Pointer to pointer undefined");
+					throw Type_error("The expression must have the type of an independent object. (not a pointer and not an array element)");
 				else
 					throw Type_error("Trying to get pointer to constant expression.");
 			}

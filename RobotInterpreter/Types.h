@@ -222,30 +222,25 @@ namespace language {
 	class Pointer :public Type {
 	private:
 		std::shared_ptr<std::shared_ptr<Type>> ptr_;
-		 Types type_;
 	public:
 		Pointer(std::shared_ptr<Type> ptr) {
 			ptr_ = std::make_shared<std::shared_ptr<Type>>(ptr);
-			type_ = ptr->getType();
 		}
-		Pointer() :ptr_(nullptr), type_(Types::BYTE) {}
+		Pointer() :ptr_(nullptr) {}
 		Pointer(Pointer& ptr) {
 			ptr_ = ptr.ptr_;
-			type_ = ptr.type_;
 		}
 		Pointer(Pointer&& ptr) noexcept {
 			ptr_ = std::move(ptr.ptr_);
-			type_ = ptr.type_;
 		}
 		Pointer(std::shared_ptr<std::shared_ptr<Type>> ptr) {
 			ptr_ = ptr;
-			type_ = (*ptr)->getType();
 		}
 		virtual const Types getType() const noexcept override { return Types::POINTER; }
 		virtual void operator=(std::shared_ptr<Type> ptr) {
 			if (ptr->getType() == Types::POINTER) {
 				auto tmp = std::dynamic_pointer_cast<Pointer>(ptr)->ptr_;
-				if (ptr_ &&  (**tmp).getType() != type_)
+				if (ptr_ &&  (**tmp).getType() != (**ptr_).getType())
 					throw Type_error("Different pointer tipes");
 				ptr_ = tmp;
 			}
@@ -262,8 +257,6 @@ namespace language {
 			else return false;
 		}
 		std::shared_ptr<Type> operator*() {
-			if ((*ptr_)->getType() != type_)
-				throw Type_error("Target memory type has been changed outside. It is possible if pointer to array elemnt was created and after that some different element type has been put to array.");
 			return *ptr_;
 		}
 		virtual ~Pointer() {}
