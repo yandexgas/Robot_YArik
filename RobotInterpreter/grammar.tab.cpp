@@ -2735,7 +2735,7 @@ std::cout<<str<<std::endl;
 #include "lex.yy.cpp"
 void main(){
  
-// yydebug = 300;
+//yydebug = 300;
  for(int i=0;i<1500000; i++){
  fopen_s(&yyin, "pipa.txt", "r");
     yyparse();

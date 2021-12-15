@@ -29,8 +29,8 @@ namespace language {
 		std::shared_ptr<Type> getData() {
 			return data_;
 		}
-		virtual bool isInMemory() {
-			return false;
+		 virtual bool isInMemory() {
+			return lvalue;
 		}
 		MemoryCell operator+(MemoryCell val) {
 			MemoryCell result;
@@ -248,7 +248,7 @@ namespace language {
 	class Variable :public MemoryCell, public NamedObject {	
 	public:
 		Variable(std::string name, MemoryCell& mem): MemoryCell(mem), NamedObject(name,true){}
-		Variable(std::string name, std::shared_ptr<Type> tp) : MemoryCell(tp), NamedObject(name,true){}
+		Variable(std::string name, std::shared_ptr<Type> tp) : MemoryCell(tp,true), NamedObject(name,true){}
 		Variable(std::string name, Types type, bool ptr=false) :NamedObject(name,true), MemoryCell(nullptr) {
 			switch (type)
 			{

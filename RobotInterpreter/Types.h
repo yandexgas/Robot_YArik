@@ -354,6 +354,7 @@ namespace language {
 		Array& operator=(Array& arr) {
 			if (&arr != this) {
 				dimensions_ = arr.dimensions_;
+				data_.clear();
 				for (auto a : arr.data_)
 					data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
 			}

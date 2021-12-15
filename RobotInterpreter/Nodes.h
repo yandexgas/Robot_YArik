@@ -46,11 +46,12 @@ namespace language {
 	public:
 		constString(std::string str, std::int16_t lino) : Leaf(lino) {
 			std::vector<int> dim;
-			dim.push_back(str.length()+1);
+			dim.push_back(str.length());
 			auto res = std::make_shared<Array>(dim);
 			for (int i = 0; i < str.length(); i++)
 				*(res->getDataLink()[i]) = std::make_shared<Math_type<char>>(str[i], Types::BYTE);
-			*(res->getDataLink()[str.length()]) = std::make_shared<Math_type<char>>(0, Types::BYTE);
+			*(res->getDataLink()[str.length()-1]) = std::make_shared<Math_type<char>>(0, Types::BYTE);
+			value_ = std::make_shared<MemoryCell>(res);
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
 	};
@@ -676,13 +677,15 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			auto fst = ptr_->pass(mem);
 			if (fst) {
-				if (fst.value()->getData()->getType() != Types::POINTER&& fst.value()->isInMemory()) {
-					//std::shared_ptr<std::shared_ptr<Type>> ptr = std::make_shared<std::shared_ptr<Type>>();
-					//*ptr = fst.value()->getData();
+				if (fst.value()->getData()->getType() != Types::POINTER && fst.value()->isInMemory()) {
+
 					std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(fst.value()->getData());
 					return std::make_shared<MemoryCell>(tmp);
 				}
-				throw Type_error("Pointer to pointer undefined");
+				else if (fst.value()->isInMemory())
+					throw Type_error("Pointer to pointer undefined");
+				else
+					throw Type_error("Trying to get pointer to constant expression.");
 			}
 			throw SintaxTree_Exception("Missed operand. Expression exprected;");
 		}

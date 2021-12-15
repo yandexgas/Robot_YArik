@@ -1338,7 +1338,7 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 72 "sinatx.l"
-{yylval.string == new std::string(yytext+1);
+{yylval.string = new std::string(yytext+1);
 	return CONSTSTRING;}
 	YY_BREAK
 case 45:
