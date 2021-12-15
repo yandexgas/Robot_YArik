@@ -35,16 +35,22 @@ void yyerror(const char*);
 (tsikl)/[^a-zA-Z0-9_] {return FOR;}
 (nachalo)/[^a-zA-Z0-9_] {return BEGIN_;}
 (konets)/([^a-zA-Z0-9_]|<EOF>) {return END;}
+(konets)$ {return END;}
 (razmer)/[^a-zA-Z0-9_] {return RAZMER;}
 (proverka)/[^a-zA-Z0-9_] {return PROVERKA;}
 (\|\|) {return OR;}
 (\&\&) {return AND;}
-(idi)/[^a-zA-Z0-9_] {return IDI;}
-(poverni)/[^a-zA-Z0-9_] {return POVERNI;}
-(vzletyi)/[^a-zA-Z0-9_] {return VZLETI;}
-(ostanov)/[^a-zA-Z0-9_] {return OSTANOV;}
+(idi)/[^a-zA-Z0-9_] {yylval.commands=language::Commands::GO;
+			return IDI;}
+(poverni)/[^a-zA-Z0-9_] {yylval.commands=language::Commands::ROTATE;
+			return POVERNI;}
+(vzletyi)/[^a-zA-Z0-9_] {yylval.commands=language::Commands::FLY;
+			return VZLETI;}
+(ostanov)/[^a-zA-Z0-9_] {yylval.commands=language::Commands::STOP;
+			return OSTANOV;}
 (gdeya\?) {return GDEYA;}
-(smotri)/[^a-zA-Z0-9_] {return SMOTRI;}
+(smotri)/[^a-zA-Z0-9_] {yylval.commands=language::Commands::LOOK;
+			return SMOTRI;}
 (->) {return ARROW;}
 ((v|na)?pered)/[^a-zA-Z0-9_] {yylval.sides=language::Sides::FRONT;
 				return  PERED;}
@@ -56,8 +62,6 @@ void yyerror(const char*);
 				return  LEVO;}
 (funktsiya)/[^a-zA-Z0-9_] {return FUNC;}
 (\#vkluchit)/[^a-zA-Z0-9_] {return VCLUCHIT;}
-(pechat)/[^a-zA-Z0-9_] {return PECHAT;}
-(chitat)/[^a-zA-Z0-9_] {return CHITAT;}
 (adr)/[^a-zA-Z0-9_] {return ADR;}
 (=>) {return FIELD_OPER;}
 [<=>+/\-*~\[\],\(\);\{\}:] {return *yytext;}

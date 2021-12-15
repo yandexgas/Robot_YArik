@@ -56,6 +56,12 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return value_; }
 	};
 
+	class Where_operator : public Leaf {
+		public:
+			Where_operator(std::int16_t lino): Leaf(lino){}
+			virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return robot::Robot::WhereAmI(); }
+	};
+
 	class Var :public Leaf {
 	private:
 		std::string name;
@@ -314,19 +320,6 @@ namespace language {
 			throw SintaxTree_Exception("Incorrect operands for typeCheck");
 		}
 		virtual ~TypeCheck_expression()override {}
-	};
-
-
-
-	class WatchOperator_expression: public Node {
-	private:
-		Sides direction_;
-	public:
-		WatchOperator_expression(Sides sd,std::int16_t lino):Node(lino),direction_(sd){}
-		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			return std::make_shared<MemoryCell>(look_at(direction_));
-		}
-		virtual ~WatchOperator_expression() override {}
 	};
 
 	class ArrayIndaxation_expression : public Node {
@@ -692,6 +685,23 @@ namespace language {
 			throw SintaxTree_Exception("Missed operand. Expression exprected;");
 		}
 		virtual ~Pointer_get_expr() override {}
+	};
+
+	class Command_list : public Node {
+	private:
+		std::list<std::pair<Commands, std::optional<Sides>>> command_que_;
+	public:
+		Command_list(std::int16_t lino, std::list<std::pair<Commands, std::optional<Sides>>>& lst): Node(lino),command_que_(lst){}
+		void addCommand(Commands cmd, std::optional<Sides> sd = {}) {
+			if (cmd == Commands::ROTATE &&
+				(sd == Sides::FRONT || sd == Sides::BACK))
+				throw Robot_error("Rotate front and rotate back - undefined.");
+			command_que_.push_back(std::make_pair(cmd, sd));
+		}
+
+		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
+					return robot::Robot::doCommands(command_que_);
+		}
 	};
 
 	class Statement_list :public Node {

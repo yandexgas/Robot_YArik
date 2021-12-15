@@ -96,3 +96,18 @@
 			return out;
 		}
 	};
+
+	class Robot_error :public std::exception {
+	private:
+		size_t dimension;
+		int incorrect_size;
+		const std::string msg = "Size of dimension must bi positive.";
+
+	public:
+		Robot_error(size_t dim, int size) :exception((msg).c_str()) {};
+		Robot_error(std::string ch) :exception(ch.c_str()) {};
+		friend std::ostream& operator <<(std::ostream& out, Robot_error& st) {
+			out << st.what() << std::endl;
+			return out;
+		}
+	};

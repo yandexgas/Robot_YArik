@@ -2733,8 +2733,17 @@ std::cout<<str<<std::endl;
 
 #pragma once
 #include "lex.yy.cpp"
+namespace robot {
+    bool Robot::AllowScriptExecution  { true };
+    bool Robot::isOnFly{ false };
+    Square Robot::position{};
+    int Robot::rotation{ 0 };
+
+    Square Labitinth::exit_{};
+    std::vector<std::vector<bool>> Labitinth::walls{};
+}
 void main(){
- 
+    robot::initArea();
 //yydebug = 300;
  for(int i=0;i<1500000; i++){
  fopen_s(&yyin, "pipa.txt", "r");

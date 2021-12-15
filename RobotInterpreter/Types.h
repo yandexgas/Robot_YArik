@@ -304,18 +304,21 @@ namespace language {
 		}
 		Square& setY(std::int32_t val) {
 			*Y_ = val;
+			return *this;
 		}
 		std::shared_ptr<Type> getX()const noexcept {
 			return X_;
 		}
 		Square& setX(std::int32_t val) {
 			*X_ = val;
+			return *this;
 		}
 		std::shared_ptr<Type> getBusy()const noexcept {
 			return busy_;
 		}
 		Square& setBusy(bool val) {
 			*busy_ = val;
+			return *this;
 		}
 		virtual ~Square() override {}
 	};

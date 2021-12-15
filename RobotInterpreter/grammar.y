@@ -16,10 +16,12 @@ bool bval;
 language::Types types_;
 std::string* string;
 language::Sides sides;
+language::Commands commands;
 std::vector<int>* dimensions;
 language::Square* square;
 std::list<std::shared_ptr<language::Node>>* operands_;
 std::list<language::fparam>* params_;
+std::list<std::pair<language::Commands, std::optional<Sides>>>* cmd
 language::fparam* fparam_;
 char ch_;
 }
@@ -35,13 +37,13 @@ char ch_;
 %token PROVERKA
 %left OR
 %left AND
-%token IDI POVERNI VZLETI OSTANOV GDEYA SMOTRI
+%token <commands>IDI <commands>POVERNI <commands>VZLETI <commands>OSTANOV <commands>SMOTRI
+%token GDEYA
 %left ARROW
 %token <sides> PERED  <sides> ZAD  <sides> PRAVO  <sides> LEVO
 %token FUNC
 %token VCLUCHIT
 %token <string> FILEPATH
-%token PECHAT CHITAT
 %left '<' '>'
 %left '+' '-'
 %left '*' '/'
@@ -51,6 +53,7 @@ char ch_;
 %right STAR
 %nonassoc '[' ']'
 
+%type <commands> command_word
 %type <fparam_> arg
 %type <Node_> expr
 %type <Node_> check
@@ -62,7 +65,8 @@ char ch_;
 %type <operands_> oper_list
 %type <params_>args
 %type <params_>arglst
-%type <ival> robot_oper
+%type <cmd> robot_command
+%type <cmd> robot_oper
 %type <Prog_> stmt_lst
 %type <types_> type
 %type <Prog_> program
@@ -115,7 +119,6 @@ stmt:
 	| IF '(' expr ')' stmt ELSE stmt {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<Condition_expression>(1,*$3,*$5,*$7);
 					delete $3; delete $5; delete $7;}
-	| PECHAT '(' expr ')' ';' {/*пока не до этого*/}
 	| fdecl {$$=$1;}
 	| BEGIN_ stmt_lst END {
 		$$=new std::shared_ptr<Node>();
@@ -127,20 +130,24 @@ stmt:
 	;
 
 robot_oper:
-	robot_command {/*пока не до этого*/}
-	| robot_oper ARROW robot_command {/*пока не до этого*/}
+	robot_command {$$=new std::shared_ptr<Command_list>();
+			*$$= std::make_shared<Command_list>(1,*$1);
+			delete $1;}
+	| robot_oper ARROW robot_command {(**$$).addCommand($1,$3);}
 	;
 
 robot_command:
-	command_word ARROW side {/*пока не до этого*/}
-	| OSTANOV {/*пока не до этого*/г}
+	command_word ARROW side {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
+			(*$$).push_back(std::make_pair($1,$3));}
+	| OSTANOV {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
+			(*$$).push_back(std::make_pair($1,std::nullopt));}
 	;
 
 command_word:
-	IDI {/*пока не до этого*/}
-	| SMOTRI{/*пока не до этого*/} 
-	| VZLETI {/*пока не до этого*/} 
-	| POVERNI {/*пока не до этого*/}
+	IDI {$$=$1;}
+	| SMOTRI{$$=$1;} 
+	| VZLETI {$$=$1;} 
+	| POVERNI {$$=$1;}
 	;
 fdecl:
 	type FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
@@ -289,7 +296,9 @@ expr:
 
 	| check {$$=$1;}
 
-	| robot_oper {/*пока не до этого*/}
+	| robot_oper {$$=new std::shared_ptr<Node>();
+			*$$=*$1;
+			delete $1;}
 
 	| expr '>' expr {$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<More_expression>(1, *$1,*$3);
@@ -302,8 +311,6 @@ expr:
 	| expr '['oper_list ']' {$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<ArrayIndaxation_expression>(1, *$1,*$3);
 		delete $1; delete$3;}
-
-	| CHITAT '(' expr ')' {/*пока не до этого*/}
 
 	| GDEYA {/*пока не до этого*/}
 
@@ -329,18 +336,15 @@ check:
 		*$$=std::make_shared<TypeCheck_expression>(1,*$2,$3);
 		delete $2;
 		}
-	| PROVERKA expr PTR type {/*пока не до этого*/}
 	| PROVERKA type expr  {
 		$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<TypeCheck_expression>(1,*$3,$2);
 		delete $3;
 		}
-	| PROVERKA PTR type expr {/*пока не до этого*/}
 	| PROVERKA type type {
 		$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<TypeCheck_expression>(1,$2,$3);
 		}
-	| PROVERKA PTR type PTR type {/*пока не до этого*/}
 	;
 
 
