@@ -315,6 +315,8 @@ namespace language {
 		virtual ~TypeCheck_expression()override {}
 	};
 
+
+
 	class WatchOperator_expression: public Node {
 	private:
 		Sides direction_;
@@ -547,7 +549,11 @@ namespace language {
 			fun.name = name_;
 			fun.arg = tmp;
 			auto fptr = (*mem)[fun];
-			return dynamic_cast<FunDeclaration_expression*>(fptr->getPtr())->funcCal(fun.arg);
+			auto target_func = fptr->getPtr();
+			if (target_func)
+				return dynamic_cast<FunDeclaration_expression*>(target_func.value())->funcCal(fun.arg);
+			else
+				 return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.arg);
 		}
 		virtual  ~Function_call() override {};
 	};
@@ -703,8 +709,8 @@ namespace language {
 				a->pass(mem);
 			return std::nullopt;
 		}
-		void initMemory() {
-			memTable_ = std::make_shared<MemoryFrame>();
+		void initMemory(std::shared_ptr<MemoryFrame> global = nullptr) {
+			memTable_ = std::make_shared<MemoryFrame>(global);
 		}
 		void pass() {
 			pass(memTable_);

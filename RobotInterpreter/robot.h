@@ -1,7 +1,14 @@
 #pragma once
 #include "Standart_lib.h"
 namespace language {
-
+	enum class Sides
+	{
+		FRONT,
+		BACK,
+		RIGHT,
+		LEFT
+	};
+	MemoryCell look_at(Sides);
 }
 namespace robot {
 	using namespace language;

@@ -69,7 +69,7 @@
 
 /* Line 189 of yacc.c  */
 #line 1 "grammar.y"
-
+#pragma once
 	#include "Nodes.h"
 	using namespace language;
 	std::shared_ptr<Statement_list>* root;
@@ -2730,6 +2730,8 @@ std::string str;
 str=c;
 std::cout<<str<<std::endl;
 }
+
+#pragma once
 #include "lex.yy.cpp"
 void main(){
  
@@ -2737,7 +2739,7 @@ void main(){
  for(int i=0;i<1500000; i++){
  fopen_s(&yyin, "pipa.txt", "r");
     yyparse();
-    (*root)->initMemory();
+    (*root)->initMemory(initStLib());
     (*root)->pass();
 	delete root;
 	 fclose(yyin);

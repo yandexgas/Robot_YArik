@@ -298,7 +298,7 @@ namespace language {
 	};
 	class Node;
 	class Function {
-	private:
+	protected:
 		const std::list<fparam> params_;
 		const std::optional<Types> type_;
 		const bool ptrType_;
@@ -320,7 +320,7 @@ namespace language {
 			return *this;
 		}
 
-		Node* getPtr() {
+		virtual std::optional<Node*> getPtr() {
 			return fptr_;
 		}
 		bool operator==(std::list<std::shared_ptr<MemoryCell>>& f) {
@@ -481,6 +481,8 @@ namespace language {
 			localMemory_.clear();
 			higerFrame_ = nullptr;
 		}
+		
+
 		~MemoryFrame(){}
 	};
 }

@@ -14,3 +14,7 @@ konets
 
 simvol i = -1;
 f(adr i);
+pechataem(i);
+yacheyka pupa ={0,0,0};
+chitaem(adr pupa);
+pechataem(pupa);

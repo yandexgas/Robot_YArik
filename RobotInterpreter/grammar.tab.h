@@ -85,7 +85,7 @@
      STAR = 301
    };
 #endif
-
+#pragma once
 #include "Nodes.h"
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

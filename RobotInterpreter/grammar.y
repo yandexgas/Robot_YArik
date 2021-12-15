@@ -391,7 +391,7 @@ void main(){
  for(int i=0;i<1500000; i++){
  fopen_s(&yyin, "pipa.txt", "r");
     yyparse();
-    (*root)->initMemory();
+    (*root)->initMemory(initStLib());
     (*root)->pass();
 	delete root;
 	 fclose(yyin);
