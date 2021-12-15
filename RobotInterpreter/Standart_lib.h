@@ -20,7 +20,7 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {
 			auto tmp = args.front();
 			args.pop_front();
-			auto b = tmp->getData()->getType() == Types::LINK ?
+			auto b = tmp->getData()->getHideType() == Types::LINK ?
 				**std::dynamic_pointer_cast<Link>(tmp->getData()) :
 				tmp->getData();
 			switch (tmp->getData()->getType())

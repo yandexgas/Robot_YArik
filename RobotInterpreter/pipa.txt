@@ -6,6 +6,14 @@ i= adr b[0];
 *i = 'a';
 yacheyka k = {0,0,0};
 *i=k;
+b[0]='a';
 simvol bs;
+pechataem(*i);
+pechataem(b[0]);
+i=adr bs;
+
+*i='a';
+pechataem(*i);
+pechataem(b[0]);
 i = adr bs;
 
