@@ -179,7 +179,9 @@ namespace language {
 			return *this;
 		}
 		std::shared_ptr<Type> operator*() {
-			return pointer_;
+			if(inited)
+				return pointer_;
+			else throw Type_error("Non initiallized memory access.");
 		}
 		virtual std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Link>((*pointer_).makeClone());
@@ -294,7 +296,10 @@ namespace language {
 			return std::make_shared<Square>(*X_, *Y_, *busy_);
 		}
 		virtual void operator=(std::shared_ptr<Type> a) {
-			*this = (*std::dynamic_pointer_cast<Square>(a));
+			auto tmp= std::dynamic_pointer_cast<Square>(a);
+			if (tmp)
+				*this = *tmp;
+			else throw Type_error("This object can't be converted to square.");
 		}
 		virtual operator Square() {
 			return*this;
@@ -355,7 +360,7 @@ namespace language {
 			dimensions_ = std::move(arr.dimensions_);
 		}
 		Array& operator=(Array& arr) {
-			if (&arr != this) {
+			if ( &arr != this) {
 				dimensions_ = arr.dimensions_;
 				data_.clear();
 				for (auto a : arr.data_)
@@ -380,7 +385,11 @@ namespace language {
 			return std::make_shared<Array>(this->dimensions_,this->data_);
 		}
 		virtual void operator=(std::shared_ptr<Type> a) {
-			*this = *std::dynamic_pointer_cast<Array>(a);
+			auto tmp = std::dynamic_pointer_cast<Array>(a);
+			if (tmp)
+				*this = *tmp;
+			else
+				throw Type_error("Object can't be converted to array.");
 		}
 		size_t getDimensionality()const noexcept {
 			return dimensions_.size();
