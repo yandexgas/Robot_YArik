@@ -120,12 +120,10 @@ public:
 	Script_error(std::string ch, std::size_t lino=0) : exception(ch.c_str()), lino(lino) {};
 	Script_error(Script_error& ch, std::size_t lino) {
 		*this = ch;
-		this->lino = lino <= 0 ? lino : this->lino; 
+		this->lino = this->lino <= 0 ? lino : this->lino;
 	};
 	friend std::ostream& operator <<(std::ostream& out, Script_error& st) {
-		system("color 04");
-		out << st.what() << std::endl << "Line: " << st.lino << std::endl;
-		system("color 0F");
+		out << std::endl << st.what() << std::endl << "Line: " << st.lino << std::endl;
 		return out;
 
 	}

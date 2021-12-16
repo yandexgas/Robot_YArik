@@ -479,7 +479,11 @@ namespace language {
 				throw Script_error("Attemp to use variable as function.");
 			}
 			else
-				return (*higerFrame_)[f];
+			{ 
+				if(higerFrame_)
+					return (*higerFrame_)[f];
+				else throw Script_error("No function with complitable parametrs.");
+			}
 		}
 		void clear() {
 			localMemory_.clear();

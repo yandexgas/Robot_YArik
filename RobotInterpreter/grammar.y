@@ -105,6 +105,10 @@ program:
 	| program PROVERKA error {std::cout<<"Incorrect usage of type check operator in line:  "<<@3.first_line<<std::endl;
 			yyerrok;
 			$$=$1;}
+	| program type error
+			{std::cout<<"Declaration or type check expected in line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
 	
 	;
 
@@ -115,35 +119,35 @@ stmt:
 	| expr ';'  {$$=$1;}
 	| decl ';'  {$$=$1;}
 	| expr '=' expr ';' %prec IF {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<Assigment_node>(1,*$1,*$3);
+					*$$=std::make_shared<Assigment_node>(@2.first_line,*$1,*$3);
 					delete $1; delete $3;}
 
 	| FOR '(' decl ':' expr ')' stmt {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<For_loop>(1,*$3,*$5,*$7,true);
+					*$$=std::make_shared<For_loop>(@1.first_line,*$3,*$5,*$7,true);
 					delete $3; delete $5; delete $7;}
 
 	| FOR '(' expr '=' expr ':' expr ')' stmt {
 					$$=new std::shared_ptr<Node>();
-					auto tmp =std::make_shared<Assigment_node>(1,*$3,*$5);
-					*$$=std::make_shared<For_loop>(1,tmp,*$7,*$9);
+					auto tmp =std::make_shared<Assigment_node>(@1.first_line,*$3,*$5);
+					*$$=std::make_shared<For_loop>(@1.first_line,tmp,*$7,*$9);
 					delete $3; delete $5; delete $7;delete $9;
 							}
 
 	| FOR '(' expr ':' expr ')' stmt {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<For_loop>(1,*$3,*$5,*$7);
+					*$$=std::make_shared<For_loop>(@1.first_line,*$3,*$5,*$7);
 					delete $3; delete $5; delete $7;}
 	
 			
 	| WHILE '(' expr ')' stmt {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<While_loop>(1,*$3,*$5);
+					*$$=std::make_shared<While_loop>(@1.first_line,*$3,*$5);
 					delete $3; delete $5;} 
 	
 	| IF '(' expr ')' stmt %prec IFX {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<Condition_expression>(1,*$3,*$5);
+					*$$=std::make_shared<Condition_expression>(@1.first_line,*$3,*$5);
 					delete $3; delete $5;} 
 	
 	| IF '(' expr ')' stmt ELSE stmt {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<Condition_expression>(1,*$3,*$5,*$7);
+					*$$=std::make_shared<Condition_expression>(@1.first_line,*$3,*$5,*$7);
 					delete $3; delete $5; delete $7;}
 	
 	| fdecl {$$=$1;}
@@ -160,7 +164,7 @@ stmt:
 
 robot_oper:
 	robot_command {$$=new std::shared_ptr<Command_list>();
-			*$$= std::make_shared<Command_list>(1,*$1);
+			*$$= std::make_shared<Command_list>(@1.first_line,*$1);
 			delete $1;}
 	| robot_oper ARROW robot_command {
 				auto cmd = (*($3)).front();
@@ -172,29 +176,32 @@ robot_oper:
 
 robot_command:
 	command_word ARROW side {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
-			(*$$).push_back(std::make_pair($1,$3));}
+			(*$$).push_back(std::make_pair($1,$3));
+			@$=@2;}
 	| OSTANOV {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
-			(*$$).push_back(std::make_pair($1,std::nullopt));}
-
+			(*$$).push_back(std::make_pair($1,std::nullopt));
+			@$=@1;}
+	| VZLETI {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
+			(*$$).push_back(std::make_pair($1,std::nullopt));
+			@$=@1;}
 	;
 
 command_word:
 	IDI {$$=$1;}
 	| SMOTRI{$$=$1;} 
-	| VZLETI {$$=$1;} 
 	| POVERNI {$$=$1;}
 	;
 fdecl:
 	type FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<FunDeclaration_expression>(1,*$3,*$4,*$6,$1);
+					*$$=std::make_shared<FunDeclaration_expression>(@2.first_line,*$3,*$4,*$6,$1);
 					delete $3; delete $4; delete $6;}
 
 	| PTR type FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<FunDeclaration_expression>(1,*$4,*$5,*$7,$2,true);
+					*$$=std::make_shared<FunDeclaration_expression>(@1.first_line,*$4,*$5,*$7,$2,true);
 					delete $4; delete $5; delete $7;}
 
 	| FUNC name arglst BEGIN_ stmt_lst END {$$=new std::shared_ptr<Node>();
-					*$$=std::make_shared<FunDeclaration_expression>(1,*$2,*$3,*$5);
+					*$$=std::make_shared<FunDeclaration_expression>(@1.first_line,*$2,*$3,*$5);
 					delete $2; delete $3; delete $5;}
 	;
 
@@ -215,30 +222,30 @@ args:
 
 decl:
 	arg {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,$1->name,$1->type, $1->isPtr);
+		*$$=std::make_shared<VarDeclaration_expression>(@1.first_line,$1->name,$1->type, $1->isPtr);
 		delete $1;}
 
 	| arg '=' expr  {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,$1->name,$1->type, $1->isPtr, *$3);
+		*$$=std::make_shared<VarDeclaration_expression>(@2.first_line,$1->name,$1->type, $1->isPtr, *$3);
 		delete $1; delete $3;}
 
 	| YACHEYKA name '=' '{' expr ',' expr ',' expr '}' %prec YACHEYKA {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<SquareDecl>(1,*$2,*$5,*$7,*$9);
+		*$$=std::make_shared<SquareDecl>(@2.first_line,*$2,*$5,*$7,*$9);
 		delete $2; delete $5; delete $7; delete $9;
 								}
 	| MASSIV name '=' '{' oper_list '}' %prec MASSIV {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<ArrDecl>(1,*$2,$5);
+		*$$=std::make_shared<ArrDecl>(@1.first_line,*$2,$5);
 		delete $2}
 
 	| MASSIV name '=' expr {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::ARRAY, false, *$4);
+		*$$=std::make_shared<VarDeclaration_expression>(@1.first_line,*$2,language::Types::ARRAY, false, *$4);
 		delete $2;delete $4;}
 	| YACHEYKA name '=' expr {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<VarDeclaration_expression>(1,*$2,language::Types::SQUARE, false, *$4);
+		*$$=std::make_shared<VarDeclaration_expression>(@1.first_line,*$2,language::Types::SQUARE, false, *$4);
 		delete $2; delete $4;}
 	;
 
@@ -247,17 +254,19 @@ arg:
 			$$->type=$1;
 			$$->name=*$2;
 			$$->isPtr=false;
-			delete $2;}
+			delete $2;
+			@$=@1;}
 	| PTR type name {$$=new fparam();
 			$$->type=$2;
 			$$->name=*$3;
 			$$->isPtr=true;
-			delete $3;}
+			delete $3;
+			@$=@1;}
 	;
 
 stmt_lst:
 	stmt {$$=new std::shared_ptr<language::Statement_list>();
-		*$$=std::make_shared<language::Statement_list>(1,*$1);
+		*$$=std::make_shared<language::Statement_list>(1.first_line,*$1);
 		delete $1;} 
 	| stmt_lst stmt {*$1.addStatement($2);
 			$$=$1;
@@ -266,67 +275,67 @@ stmt_lst:
 
 expr:
 	INTNUM {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Literal<int>>($1,language::Types::INT,1);}
+		*$$=std::make_shared<Literal<int>>($1,language::Types::INT,@1.first_line);}
 
 	| FLOATNUM {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Literal<float>>($1,language::Types::FLOAT,1);}
+		*$$=std::make_shared<Literal<float>>($1,language::Types::FLOAT,@1.first_line);}
 
 	| ISTINO {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Literal<bool>>($1,language::Types::BOOL,1);}
+		*$$=std::make_shared<Literal<bool>>($1,language::Types::BOOL,@1.first_line);}
 	| CHAR	{$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Literal<char>>($1,language::Types::BYTE,1);}
+		*$$=std::make_shared<Literal<char>>($1,language::Types::BYTE,@1.first_line);}
 	| CONSTSTRING {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<constString>(*$1,1);
+		*$$=std::make_shared<constString>(*$1,@1.first_line);
 		delete $1;}
 
 	| name {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Var>(*$1,1);
+		*$$=std::make_shared<Var>(*$1,@1.first_line);
 		delete $1;}
 
 	| name operands {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Function_call>(1, *$1,$2);
+		*$$=std::make_shared<Function_call>(@1.first_line, *$1,$2);
 		delete $1;}
 
 	| expr '+' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Addittion_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Addittion_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr '-' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Substract_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Substract_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr '*' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Multiply_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Multiply_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr '/' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Divide_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Divide_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| '-' expr %prec UMINUS {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<UnaryMinus_expression>(1, *$2);
+		*$$=std::make_shared<UnaryMinus_expression>(@1.first_line, *$2);
 		delete $2;}
 
 	| '~' expr  {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<LogicInversion_expression>(1, *$2);
+		*$$=std::make_shared<LogicInversion_expression>(@1.first_line, *$2);
 		delete $2;}
 
 	| expr OR expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Disjunction_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Disjunction_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr AND expr  {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Conjunction_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Conjunction_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| '(' expr ')' {$$=$2;}
 
 	| expr FIELD_OPER name %prec FIELD_OPER {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<FieldAccess_expression>(1, *$3,*$1);
+		*$$=std::make_shared<FieldAccess_expression>(@2.first_line, *$3,*$1);
 		delete $1; delete$3;}
 
 	| RAZMER expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<DimensionOperator>(1, *$2);
+		*$$=std::make_shared<DimensionOperator>(@1.first_line, *$2);
 		delete $2;}
 
 	| check {$$=$1;}
@@ -336,51 +345,51 @@ expr:
 			delete $1;}
 
 	| expr '>' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<More_expression>(1, *$1,*$3);
+		*$$=std::make_shared<More_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr '<' expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Less_expression>(1, *$1,*$3);
+		*$$=std::make_shared<Less_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| expr '['oper_list ']' {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<ArrayIndaxation_expression>(1, *$1,*$3);
+		*$$=std::make_shared<ArrayIndaxation_expression>(@2.first_line, *$1,*$3);
 		delete $1; delete$3;}
 
 	| GDEYA {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Where_operator>(1);
+		*$$=std::make_shared<Where_operator>(@1.first_line);
 		}
 
 	| '*' expr %prec STAR {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<StarOperator>(1, *$2);
+		*$$=std::make_shared<StarOperator>(@1.first_line, *$2);
 		delete $2;}
 
 	| ADR expr {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<Pointer_get_expr>(1, *$2);
+		*$$=std::make_shared<Pointer_get_expr>(@1.first_line, *$2);
 		delete $2;}
 	;
 
 check:
 	PROVERKA name name {
-		auto ex1 = std::make_shared<Var>(*$2,1);
-		auto ex2 = std::make_shared<Var>(*$3,1);
+		auto ex1 = std::make_shared<Var>(*$2,@1.first_line);
+		auto ex2 = std::make_shared<Var>(*$3,@1.first_line);
 		delete $2; delete $3;
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<TypeCheck_expression>(1,ex1,ex2);
+		*$$=std::make_shared<TypeCheck_expression>(@1.first_line,ex1,ex2);
 		}
 	| PROVERKA expr type {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<TypeCheck_expression>(1,*$2,$3);
+		*$$=std::make_shared<TypeCheck_expression>(@1.first_line,*$2,$3);
 		delete $2;
 		}
 	| PROVERKA type expr  {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<TypeCheck_expression>(1,*$3,$2);
+		*$$=std::make_shared<TypeCheck_expression>(@1.first_line,*$3,$2);
 		delete $3;
 		}
 	| PROVERKA type type {
 		$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<TypeCheck_expression>(1,$2,$3);
+		*$$=std::make_shared<TypeCheck_expression>(@1.first_line,$2,$3);
 		}
 
 	;

@@ -67,7 +67,7 @@ void yyerror(const char*);
 (poverni)/[^a-zA-Z0-9_] {yylloc.last_line=yylloc.first_line=yylineno;
 			yylval.commands=language::Commands::ROTATE;
 			return POVERNI;}
-(vzletyi)/[^a-zA-Z0-9_] {yylloc.last_line=yylloc.first_line=yylineno;
+(vzleti)/[^a-zA-Z0-9_] {yylloc.last_line=yylloc.first_line=yylineno;
 			yylval.commands=language::Commands::FLY;
 			return VZLETI;}
 (ostanov)/[^a-zA-Z0-9_] {yylloc.last_line=yylloc.first_line=yylineno;

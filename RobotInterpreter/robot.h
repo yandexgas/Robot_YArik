@@ -252,7 +252,7 @@ namespace robot {
 				break;
 			}
 		}
-		static int fly(Sides side) {
+		static int fly() {
 			isOnFly = true;
 			return -100;
 		}
@@ -297,7 +297,7 @@ namespace robot {
 						goto STOPPED;
 					break;
 				case language::Commands::FLY:
-					exec_code = fly(a.second.value());
+					exec_code = fly();
 					break;
 				case language::Commands::ROTATE:
 					exec_code = rotate(a.second.value());
