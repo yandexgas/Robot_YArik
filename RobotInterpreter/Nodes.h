@@ -36,7 +36,7 @@ namespace language {
 		Literal(T val,Types t, std::int16_t lino) : Leaf(lino) {
 			value_ = std::make_shared<MemoryCell>(std::make_shared<Math_type<T>>(val, t));
 		}
-		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return std::make_shared<MemoryCell>(* value_); }
+		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>) override { return std::make_shared<MemoryCell>(value_->getData()->makeClone()); }
 		virtual  ~Literal() override {};
 	};
 

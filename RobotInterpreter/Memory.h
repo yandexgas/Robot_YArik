@@ -18,7 +18,7 @@ namespace language {
 		MemoryCell(std::shared_ptr<Type> tp, bool lval=false): data_(tp), lvalue(lval){}
 		MemoryCell(MemoryCell& mem) {
 			//data_ = mem.data_->makeClone();
-			data_ = mem.data_->makeClone();
+			data_ = mem.data_;
 			lvalue = mem.lvalue;
 		}
 		MemoryCell(MemoryCell&& mem)noexcept {

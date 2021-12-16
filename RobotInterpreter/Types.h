@@ -63,6 +63,8 @@ namespace language {
 	}
 	template < Ariphmetical T, Ariphmetical U, Ariphmetical_result Z>
 	Z div(T u, U t, Z) {
+		if ((Z)*t == 0)
+			throw Script_error("division by zero");
 		return (Z)(*u) / (Z)(*t);
 	}
 	template < Ariphmetical T, Ariphmetical_result Z>
