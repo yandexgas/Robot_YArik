@@ -592,7 +592,7 @@ namespace language {
 				auto jj = *j + one;
 				i->applyValueChange();
 				for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) +one )) {
-					if (loop_body_) {
+					if (loop_body_&&robot::Robot::AllowScriptExecution) {
 						auto mem2 = std::make_shared<MemoryFrame>(memTable_);
 						loop_body_->pass(mem2);
 					}
@@ -617,7 +617,7 @@ namespace language {
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			try {
-				while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData()))
+				while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData())&&robot::Robot::AllowScriptExecution)
 				{
 					if (body_) {
 						body_->pass(memTable_);
@@ -721,8 +721,11 @@ namespace language {
 				santenceLst_.push_front(santance);
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			for (auto a : santenceLst_)
-				a->pass(mem);
+			for (auto a : santenceLst_) {
+				if (robot::Robot::AllowScriptExecution)
+					a->pass(mem);
+				else break;
+			}
 			return std::nullopt;
 		}
 		void initMemory(std::shared_ptr<MemoryFrame> global = nullptr) {

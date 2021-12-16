@@ -29,17 +29,17 @@ namespace robot {
 		static Square exit_;
 		static void print(Square& position, bool isOnFly,int rotation) {
 			using namespace std::chrono_literals;
-			std::this_thread::sleep_for(1000ms);
+			std::this_thread::sleep_for(100ms);
 			system("cls");
 			int x =(int)* position.getX();
 			int y = (int)*position.getY();
 			int ex = (int)*exit_.getX();
 			int ey = (int)*exit_.getY();
-			for (int i = walls[0].size()-1; i >=0; i--) {
-				for (int j = 0; j < walls.size() ;  j++) {
-					if (walls[j][i])
+			for (int i = 0; i <walls.size(); i++) {
+				for (int j = 0; j < walls[i].size() ;  j++) {
+					if (walls[i][j])
 						std::cout << " # ";
-					else if (i == y && j == x) {
+					else if (i == x && j == y) {
 						if (isOnFly)
 							std::cout << "*";
 						else {
@@ -61,7 +61,7 @@ namespace robot {
 						}
 					}
 					else { 
-						if (i == ey && j == ex)
+						if (i == ex && j == ey)
 							std::cout << " O ";
 						else
 							std::cout << " . "; 
@@ -79,7 +79,7 @@ namespace robot {
 			}
 			if (nx >= walls.size() || ny >= walls[0].size()|| nx<0||ny<0||walls[nx][ny])
 				throw Robot_error("Vrezalis v stenu!");
-			if (nx== (int)*exit_.getX() && nx == (int)*exit_.getY()) {
+			if (nx== (int)*exit_.getX() && ny == (int)*exit_.getY()) {
 				AllowScriptExecution = false;
 			}
 			position.setX(nx);
@@ -123,16 +123,16 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					Labitinth::moveTo(0,   1,position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(-1,   0,position, isOnFly, AllowScriptExecution);
 					break;
 				case 1:
-					Labitinth::moveTo(1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(0, 1, position, isOnFly, AllowScriptExecution);
 					break;
 				case 2:
-					Labitinth::moveTo(0, - 1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(1, 0, position, isOnFly, AllowScriptExecution);
 					break;
 				case 3:
-					Labitinth::moveTo( - 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(0 , -1, position, isOnFly, AllowScriptExecution);
 					break;
 				}
 				break;
@@ -140,16 +140,16 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					Labitinth::moveTo(0,  - 1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(1,  0, position, isOnFly, AllowScriptExecution);
 					break;
 				case 1:
-					Labitinth::moveTo(- 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(0, -1, position, isOnFly, AllowScriptExecution);
 					break;
 				case 2:
-					Labitinth::moveTo(0,  1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(-1,  0, position, isOnFly, AllowScriptExecution);
 					break;
 				case 3:
-					Labitinth::moveTo( 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo( 0, 1, position, isOnFly, AllowScriptExecution);
 					break;
 				}
 				break;
@@ -157,18 +157,18 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					Labitinth::moveTo( 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo( 0, 1, position, isOnFly, AllowScriptExecution);
 					
 					break;
 				case 1:
-					Labitinth::moveTo(0, - 1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(1, 0, position, isOnFly, AllowScriptExecution);
 					break;
 				case 2:
-					Labitinth::moveTo( - 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo( 0, -1, position, isOnFly, AllowScriptExecution);
 					
 					break;
 				case 3:
-					Labitinth::moveTo(0,  1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(-1,  0, position, isOnFly, AllowScriptExecution);
 					break;
 				}
 				break;
@@ -176,16 +176,16 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					Labitinth::moveTo( - 1, 0, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo( 0, -1, position, isOnFly, AllowScriptExecution);
 					break;
 				case 1:
-					Labitinth::moveTo(0,  1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(-1,  0, position, isOnFly, AllowScriptExecution);
 					break;
 				case 2:
-					Labitinth::moveTo( 1, 0,position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo( 0, 1,position, isOnFly, AllowScriptExecution);
 					break;
 				case 3:
-					Labitinth::moveTo(0,  - 1, position, isOnFly, AllowScriptExecution);
+					Labitinth::moveTo(1,  0, position, isOnFly, AllowScriptExecution);
 					break;
 				}
 				break;
@@ -200,52 +200,52 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,1, isOnFly);
-				case 1:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),1,0, isOnFly);
-				case 2:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,-1, isOnFly);
-				case 3:
 					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),-1,0, isOnFly);
+				case 1:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,1, isOnFly);
+				case 2:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),1,0, isOnFly);
+				case 3:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,-1, isOnFly);
 				}
 				break;
 			case language::Sides::BACK:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
-				case 1:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
-				case 2:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
-				case 3:
 					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
+				case 1:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
+				case 2:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
+				case 3:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
 				}
 				break;
 			case language::Sides::RIGHT:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
-				case 1:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
-				case 2:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
-				case 3:
 					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
+				case 1:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
+				case 2:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
+				case 3:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
 				}
 				break;
 			case language::Sides::LEFT:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
-				case 1:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
-				case 2:
-					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
-				case 3:
 					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
+				case 1:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
+				case 2:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
+				case 3:
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
 				}
 				break;
 			}
@@ -322,27 +322,13 @@ namespace robot {
 		std::ifstream file;
 		file.open("Area.env");
 		if (file.is_open()) {
-			int x, y, size_x, size_y, exit_x, exit_y;
-			file >> x;
-			file.ignore(1);
-			file >> y;
-			file.ignore(1);
+			int x=0, y=0, size_x, size_y, exit_x=0, exit_y=0;
 			file >> size_x;
 			file.ignore(1);
 			file >> size_y;
 			file.ignore(1);
-			file >> exit_x;
-			file.ignore(1);
-			file >> exit_y;
-			file.ignore(1);
-			
-			Robot::position.setX(x);
-			Robot::position.setY(y);
-			Robot::position.setBusy(false);
 
-			Labitinth::exit_.setY(exit_y);
-			Labitinth::exit_.setX(exit_x);
-			Labitinth::exit_.setBusy(false);
+
 
 			for (int i = 0; i < size_x; i++) {
 				Labitinth::walls.push_back({});
@@ -350,15 +336,33 @@ namespace robot {
 					Labitinth::walls[i].push_back(false);
 			}
 
-			while (!file.eof())
-			{
-				int x, y;
-				file >> x;
-				file.ignore(1);
-				file >> y;
-				file.ignore(1);
-				Labitinth::walls[x][y] = true;
-			}
+
+				for (int i = 0; i < size_x; i++) {
+					for (int j = 0; j < size_y; j++) {
+						char c;
+						file >> c;
+						Labitinth::walls[i][j] = c == '#';
+						if (c == '^') {
+							x = i;
+							y = j;
+						}
+						if (c == 'O') {
+							exit_y = j;
+							exit_x = i;
+						}
+
+					}
+					file.ignore(1);
+				}
+				
+				Robot::position.setX(x);
+				Robot::position.setY(y);
+				Robot::position.setBusy(false);
+
+				Labitinth::exit_.setY(exit_y);
+				Labitinth::exit_.setX(exit_x);
+				Labitinth::exit_.setBusy(false);
+				Labitinth::print(Robot::position,false, Robot::rotation);
 			file.close();
 		}
 	}
