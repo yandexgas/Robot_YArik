@@ -450,10 +450,10 @@ namespace language {
 							res = tmp->get(f.arg);
 							if (res)
 								return res;
-							prev = prev->higerFrame_;
 						}
 						else if (prev->localMemory_.contains(f.name))
 							throw Script_error("Attemp to use variable as function.");
+						prev = prev->higerFrame_;
 					}
 					auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[f.name]);
 					res = tmp->getConvertable(f.arg);
@@ -467,6 +467,7 @@ namespace language {
 								if (res)
 									return res;
 							}
+							prev = prev->higerFrame_;
 						}
 					}
 					else return res;
