@@ -157,7 +157,7 @@ namespace language {
 		}
 		friend MemoryCell operator<=(YFields field,MemoryCell source){
 			if (source.data_->getType() != Types::SQUARE)
-				throw Type_error("That object is not yacheyka.");
+				throw Script_error("That object is not yacheyka.");
 			MemoryCell result;
 			auto tmp = source.data_->getHideType() == Types::LINK ?
 				std::dynamic_pointer_cast<Square>(**std::dynamic_pointer_cast<Link>(source.data_)) :
@@ -180,7 +180,7 @@ namespace language {
 		}
 		MemoryCell operator[](std::vector<int> path) {
 			if(data_->getType()!=Types::ARRAY)
-				throw Type_error("That object is not massiv.");
+				throw Script_error("That object is not massiv.");
 			auto tmp = data_->getHideType() == Types::LINK ?
 				std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
 				std::dynamic_pointer_cast<Array>(data_);
@@ -189,7 +189,7 @@ namespace language {
 		}
 		MemoryCell operator*() {
 			if(data_->getType()!=Types::POINTER)
-				throw Type_error("That object is not ukazatel.");
+				throw Script_error("That object is not ukazatel.");
 			auto tmp = data_->getHideType() == Types::LINK ?
 				std::dynamic_pointer_cast<Pointer>(**std::dynamic_pointer_cast<Link>(data_)) :
 				std::dynamic_pointer_cast<Pointer>(data_);
@@ -218,7 +218,7 @@ namespace language {
 		}
 		MemoryCell arrayDimension() {
 			if(data_->getType()!=Types::ARRAY)
-				throw Type_error("That object is not massiv.");
+				throw Script_error("That object is not massiv.");
 			auto tmp = data_->getHideType() == Types::LINK ?
 				std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
 				std::dynamic_pointer_cast<Array>(data_);
@@ -228,7 +228,7 @@ namespace language {
 		}
 		virtual void operator=(std::shared_ptr<MemoryCell> mem) {
 			if(!lvalue)
-				throw Initial_error("rvalue expression can't change the value");
+				throw Script_error("rvalue expression can't change the value");
 			else *data_ = (*mem).getData();
 		}
 		~MemoryCell(){}
@@ -374,7 +374,7 @@ namespace language {
 		void insert(std::shared_ptr<Function> f) {
 			for (auto a : funcFamily_) {
 				if ((*a) == (*f))
-					throw Redefinition_error("Functions, diffirent only by result type can't be overloaded.");
+					throw Script_error("Functions, diffirent only by result type can't be overloaded.");
 			}
 			funcFamily_.push_back(f);
 		}
@@ -408,7 +408,7 @@ namespace language {
 
 		void insert(std::shared_ptr<Variable> var){
 			if (localMemory_.contains(var->getName())) {
-				throw Redefinition_error("double definition of variable: " + var->getName());
+				throw Script_error("double definition of variable: " + var->getName());
 			}
 			localMemory_[var->getName()] = var;
 		}
@@ -427,7 +427,7 @@ namespace language {
 			if (localMemory_.contains(name) && localMemory_[name]->isVariable())
 				return std::static_pointer_cast<Variable>(localMemory_[name]);
 			else if (localMemory_.contains(name)) {
-				throw Call_error("Argument list expected.");
+				throw Script_error("Argument list expected.");
 			}
 			else {
 				//if (higerFrame_)
@@ -453,7 +453,7 @@ namespace language {
 							prev = prev->higerFrame_;
 						}
 						else if (prev->localMemory_.contains(f.name))
-							throw Call_error("Attemp to use variable as function.");
+							throw Script_error("Attemp to use variable as function.");
 					}
 					auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[f.name]);
 					res = tmp->getConvertable(f.arg);
@@ -472,10 +472,10 @@ namespace language {
 					else return res;
 				}
 				else return res;
-				throw Call_error("No function with complitable parametrs.");
+				throw Script_error("No function with complitable parametrs.");
 			}
 			else if (localMemory_.contains(f.name)) {
-				throw Call_error("Attemp to use variable as function.");
+				throw Script_error("Attemp to use variable as function.");
 			}
 			else
 				return (*higerFrame_)[f];

@@ -2,7 +2,7 @@
 #include <exception>
 #include <iostream>
 #include<string>
-	class SintaxTree_Exception : public std::exception
+	/*class SintaxTree_Exception : public std::exception
 	{
 	private:
 		char incorrect_char;
@@ -110,4 +110,23 @@
 			out << st.what() << std::endl;
 			return out;
 		}
+	};*/
+
+class Script_error:public std::exception {
+private:
+	size_t lino=0;
+
+public:
+	Script_error(std::string ch, std::size_t lino=0) : exception(ch.c_str()), lino(lino) {};
+	Script_error(Script_error& ch, std::size_t lino) {
+		*this = ch;
+		this->lino = lino <= 0 ? lino : this->lino; 
 	};
+	friend std::ostream& operator <<(std::ostream& out, Script_error& st) {
+		system("color 04");
+		out << st.what() << std::endl << "Line: " << st.lino << std::endl;
+		system("color 0F");
+		return out;
+
+	}
+}; 

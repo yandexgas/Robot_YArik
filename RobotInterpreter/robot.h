@@ -77,8 +77,10 @@ namespace robot {
 				nx += x;
 				ny += y;
 			}
-			if (nx >= walls.size() || ny >= walls[0].size()|| nx<0||ny<0||walls[nx][ny])
-				throw Robot_error("Vrezalis v stenu!");
+			if (nx >= walls.size() || ny >= walls[0].size() || nx < 0 || ny < 0 || walls[nx][ny]) {
+				AllowScriptExecution = false;
+				throw Script_error("Vrezalis v stenu!");
+			}
 			if (nx== (int)*exit_.getX() && ny == (int)*exit_.getY()) {
 				AllowScriptExecution = false;
 			}

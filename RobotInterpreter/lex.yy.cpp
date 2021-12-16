@@ -262,11 +262,15 @@ static void yy_flex_free YY_PROTO(( void * ));
 #define YY_AT_BOL() (yy_current_buffer->yy_at_bol)
 
 
+#define YY_USES_REJECT
+
 #define yywrap() 1
 #define YY_SKIP_YYWRAP
 typedef unsigned char YY_CHAR;
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
 typedef int yy_state_type;
+extern int yylineno;
+int yylineno = 1;
 extern char *yytext;
 #define yytext_ptr yytext
 
@@ -287,35 +291,70 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 
 #define YY_NUM_RULES 47
 #define YY_END_OF_BUFFER 48
-static yyconst short int yy_accept[247] =
+static yyconst short int yy_acclist[284] =
     {   0,
-        0,    0,   48,   46,   45,   45,   46,   46,   46,   46,
-       38,   38,    2,   38,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   46,    0,   43,    0,   22,    0,
-        0,   29,    0,    2,   37,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   21,    0,   39,    0,    0,    0,    1,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
+       48,   46,   47,   45,   46,   47,   45,   47,   46,   47,
+       46,   47,   46,   47,   46,   47,   38,   46,   47,   38,
+       46,   47,    2,   46,   47,   38,   46,   47,   44,   46,
+       47,   44,   46,   47,   44,   46,   47,   44,   46,   47,
+       44,   46,   47,   44,   46,   47,   44,   46,   47,   44,
+       46,   47,   44,   46,   47,   44,   46,   47,   44,   46,
+       47,   44,   46,   47,   44,   46,   47,   44,   46,   47,
+       44,   46,   47,   44,   46,   47,   44,   46,   47,   44,
+       46,   47,   44,   46,   47,   44,   46,   47,   46,   47,
+       43,   22,   29,    2,   37,   44,   44,   44,   44,   44,
 
        44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,    0,   42,   40,   41,   36,   44,   44,   44,   44,
-       23,   44,   44,   44,   44,   44,   44,   44,   44,   44,
        44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,   44,   44,   31,    0,   44,   12,   44,   44,   44,
-       44,   44,   33,   44,   44,   44,   44,   44,   44,   14,
+       44,   44,   44,   21,   39,    1,   44,   44,   44,   44,
        44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
-       44,    0,   44,   44,   27,   44,   44,   44,   44,   44,
-       44,   44,   44,   30,   44,   32,   44,   44,   44,   44,
-       44,   15,   44,   44,   44,    0,   44,   44,   13,    3,
+       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
+       44,   44,   44,   44,   44,   44,   44,   42,   40,   41,
+       36,   44,   44,   44,   44,   23,   44,   44,   44,   44,
+       44,   44,   44,   44,   44,   44,   44,   44,   44,   44,
+       44,   44,   44,   44,   44,   44,   44,   44,   31,   44,
+       12,   44,   44,   44,   44,   44,   33,   44,   44,   44,
 
-       17,   17,   17,   44,    4,   10,   44,   44,   44,   44,
-       19,    8,   28,   44,   44,   44,   44,    0,   44,   44,
-        0,   44,   16,   26,   24,   44,    5,   44,   25,   44,
-        0,    6,   44,    0,   44,   20,   11,    9,   35,   34,
-        0,   44,   44,   44,    7,    0
+       44,   44,   44,   14,   44,   44,   44,   44,   44,   44,
+       44,   44,   44,   44,   44,   44,   44,   27,   44,   44,
+       44,   44,   44,   44,   44,   44,   30,   44,   32,   44,
+       44,   44,   44,   44,   15,   44,   44,   44,   44,   44,
+       13,    3,   17,   17,   18,   17,   44,    4,   10,   44,
+       44,   44,   44,   19,    8,   28,   44,   44,   44,   44,
+       44,   44,   44,   16,   26,   24,   44,    5,   44,   25,
+       44,    6,   44,   44,   20,   11,    9,   35,   34,   44,
+       44,   44,    7
+    } ;
+
+static yyconst short int yy_accept[248] =
+    {   0,
+        1,    1,    1,    2,    4,    7,    9,   11,   13,   15,
+       17,   20,   23,   26,   29,   32,   35,   38,   41,   44,
+       47,   50,   53,   56,   59,   62,   65,   68,   71,   74,
+       77,   80,   83,   86,   89,   91,   91,   92,   92,   93,
+       93,   93,   94,   94,   95,   96,   97,   98,   99,  100,
+      101,  102,  103,  104,  105,  106,  107,  108,  109,  110,
+      111,  112,  113,  114,  115,  116,  117,  118,  119,  120,
+      121,  122,  123,  124,  125,  125,  126,  126,  126,  126,
+      127,  128,  129,  130,  131,  132,  133,  134,  135,  136,
+      137,  138,  139,  140,  141,  142,  143,  144,  145,  146,
+
+      147,  148,  149,  150,  151,  152,  153,  154,  155,  156,
+      157,  158,  158,  159,  160,  161,  162,  163,  164,  165,
+      166,  167,  168,  169,  170,  171,  172,  173,  174,  175,
+      176,  177,  178,  179,  180,  181,  182,  183,  184,  185,
+      186,  187,  188,  189,  190,  190,  191,  192,  193,  194,
+      195,  196,  197,  198,  199,  200,  201,  202,  203,  204,
+      205,  206,  207,  208,  209,  210,  211,  212,  213,  214,
+      215,  216,  216,  217,  218,  219,  220,  221,  222,  223,
+      224,  225,  226,  227,  228,  229,  230,  231,  232,  233,
+      234,  235,  236,  237,  238,  239,  239,  240,  241,  242,
+
+      243,  244,  246,  247,  248,  249,  250,  251,  252,  253,
+      254,  255,  256,  257,  258,  259,  260,  261,  261,  262,
+      263,  263,  264,  265,  266,  267,  268,  269,  270,  271,
+      272,  272,  273,  274,  274,  275,  276,  277,  278,  279,
+      280,  280,  281,  282,  283,  284,  284
     } ;
 
 static yyconst int yy_ec[256] =
@@ -731,13 +770,16 @@ static yyconst short int yy_chk[1376] =
       246,  246,  246,  246,  246
     } ;
 
-static yy_state_type yy_last_accepting_state;
-static char *yy_last_accepting_cpos;
-
-/* The intent behind this definition is that it'll catch
- * any uses of REJECT which flex missed.
- */
-#define REJECT reject_used_but_not_detected
+static yy_state_type yy_state_buf[YY_BUF_SIZE + 2], *yy_state_ptr;
+static char *yy_full_match;
+static int yy_lp;
+#define REJECT \
+{ \
+*yy_cp = yy_hold_char; /* undo effects of setting up yytext */ \
+yy_cp = yy_full_match; /* restore poss. backed-over text */ \
+++yy_lp; \
+goto find_rule; \
+}
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
@@ -748,7 +790,7 @@ char *yytext;
 #include"grammar.tab.h"
 #include <stdlib.h>
 void yyerror(const char*);
-#line 752 "lex.yy.cpp"
+#line 794 "lex.yy.cpp"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -901,7 +943,7 @@ YY_DECL
 
 #line 10 "sinatx.l"
 
-#line 905 "lex.yy.cpp"
+#line 947 "lex.yy.cpp"
 
 	if ( yy_init )
 		{
@@ -940,15 +982,12 @@ YY_DECL
 		yy_bp = yy_cp;
 
 		yy_current_state = yy_start;
+		yy_state_ptr = yy_state_buf;
+		*yy_state_ptr++ = yy_current_state;
 yy_match:
 		do
 			{
 			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
-			if ( yy_accept[yy_current_state] )
-				{
-				yy_last_accepting_state = yy_current_state;
-				yy_last_accepting_cpos = yy_cp;
-				}
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
@@ -956,43 +995,55 @@ yy_match:
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+			*yy_state_ptr++ = yy_current_state;
 			++yy_cp;
 			}
 		while ( yy_base[yy_current_state] != 1331 );
 
 yy_find_action:
-		yy_act = yy_accept[yy_current_state];
-		if ( yy_act == 0 )
-			{ /* have to back up */
-			yy_cp = yy_last_accepting_cpos;
-			yy_current_state = yy_last_accepting_state;
-			yy_act = yy_accept[yy_current_state];
+		yy_current_state = *--yy_state_ptr;
+		yy_lp = yy_accept[yy_current_state];
+find_rule: /* we branch to this label when backing up */
+		for ( ; ; ) /* until we find what rule we matched */
+			{
+			if ( yy_lp && yy_lp < yy_accept[yy_current_state + 1] )
+				{
+				yy_act = yy_acclist[yy_lp];
+					{
+					yy_full_match = yy_cp;
+					break;
+					}
+				}
+			--yy_cp;
+			yy_current_state = *--yy_state_ptr;
+			yy_lp = yy_accept[yy_current_state];
 			}
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					++yylineno;
+			}
 
 do_action:	/* This label is used only to access EOF actions. */
 
 
 		switch ( yy_act )
 	{ /* beginning of action switch */
-			case 0: /* must back up */
-			/* undo the effects of YY_DO_BEFORE_ACTION */
-			*yy_cp = yy_hold_char;
-			yy_cp = yy_last_accepting_cpos;
-			yy_current_state = yy_last_accepting_state;
-			goto yy_find_action;
-
 case 1:
 YY_RULE_SETUP
 #line 11 "sinatx.l"
-{yylval.fval=atof(yytext);
+{ yylloc.last_line=yylloc.first_line=yylineno;
+		yylval.fval=atof(yytext);
 		return FLOATNUM;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 13 "sinatx.l"
+#line 14 "sinatx.l"
 {yylval.ival=atoi(yytext);
 	return INTNUM; }
 	YY_BREAK
@@ -1001,8 +1052,9 @@ case 3:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 15 "sinatx.l"
-{yylval.bval = true;
+#line 16 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.bval = true;
 				return ISTINO;}
 	YY_BREAK
 case 4:
@@ -1010,8 +1062,9 @@ case 4:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 17 "sinatx.l"
-{yylval.bval = false;
+#line 19 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.bval = false;
 				return ISTINO;}
 	YY_BREAK
 case 5:
@@ -1019,8 +1072,9 @@ case 5:
 yy_c_buf_p = yy_cp = yy_bp + 7;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 19 "sinatx.l"
-{yylval.types_= language::Types::INT;
+#line 22 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::INT;
 				return TSELOYE;}
 	YY_BREAK
 case 6:
@@ -1028,8 +1082,9 @@ case 6:
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 21 "sinatx.l"
-{yylval.types_= language::Types::FLOAT;
+#line 25 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::FLOAT;
 				return DROBNOYE;}
 	YY_BREAK
 case 7:
@@ -1037,8 +1092,9 @@ case 7:
 yy_c_buf_p = yy_cp = yy_bp + 12;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 23 "sinatx.l"
-{yylval.types_= language::Types::BOOL;
+#line 28 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::BOOL;
 				return LOGICHESKOYE;}
 	YY_BREAK
 case 8:
@@ -1046,8 +1102,9 @@ case 8:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 25 "sinatx.l"
-{yylval.types_= language::Types::BYTE;
+#line 31 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::BYTE;
 				return SIMVOL;}
 	YY_BREAK
 case 9:
@@ -1055,8 +1112,9 @@ case 9:
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 27 "sinatx.l"
-{yylval.types_= language::Types::SQUARE;
+#line 34 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::SQUARE;
 				return YACHEYKA;}
 	YY_BREAK
 case 10:
@@ -1064,8 +1122,9 @@ case 10:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 29 "sinatx.l"
-{yylval.types_= language::Types::ARRAY;
+#line 37 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.types_= language::Types::ARRAY;
 				return MASSIV;}
 	YY_BREAK
 case 11:
@@ -1073,98 +1132,111 @@ case 11:
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 31 "sinatx.l"
-{return PTR;}
+#line 40 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return PTR;}
 	YY_BREAK
 case 12:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 4;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 32 "sinatx.l"
-{return IF;}
+#line 42 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return IF;}
 	YY_BREAK
 case 13:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 33 "sinatx.l"
-{return ELSE;}
+#line 44 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return ELSE;}
 	YY_BREAK
 case 14:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 4;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 34 "sinatx.l"
-{return WHILE;}
+#line 46 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return WHILE;}
 	YY_BREAK
 case 15:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 5;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 35 "sinatx.l"
-{return FOR;}
+#line 48 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return FOR;}
 	YY_BREAK
 case 16:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 7;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 36 "sinatx.l"
-{return BEGIN_;}
+#line 50 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return BEGIN_;}
 	YY_BREAK
 case 17:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 37 "sinatx.l"
-{return END;}
+#line 52 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return END;}
 	YY_BREAK
 case 18:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 38 "sinatx.l"
-{return END;}
+#line 54 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return END;}
 	YY_BREAK
 case 19:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 39 "sinatx.l"
-{return RAZMER;}
+#line 56 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return RAZMER;}
 	YY_BREAK
 case 20:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 40 "sinatx.l"
-{return PROVERKA;}
+#line 58 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return PROVERKA;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 41 "sinatx.l"
-{return OR;}
+#line 60 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return OR;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 42 "sinatx.l"
-{return AND;}
+#line 62 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return AND;}
 	YY_BREAK
 case 23:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 43 "sinatx.l"
-{yylval.commands=language::Commands::GO;
+#line 64 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.commands=language::Commands::GO;
 			return IDI;}
 	YY_BREAK
 case 24:
@@ -1172,8 +1244,9 @@ case 24:
 yy_c_buf_p = yy_cp = yy_bp + 7;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 45 "sinatx.l"
-{yylval.commands=language::Commands::ROTATE;
+#line 67 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.commands=language::Commands::ROTATE;
 			return POVERNI;}
 	YY_BREAK
 case 25:
@@ -1181,8 +1254,9 @@ case 25:
 yy_c_buf_p = yy_cp = yy_bp + 7;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 47 "sinatx.l"
-{yylval.commands=language::Commands::FLY;
+#line 70 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.commands=language::Commands::FLY;
 			return VZLETI;}
 	YY_BREAK
 case 26:
@@ -1190,36 +1264,41 @@ case 26:
 yy_c_buf_p = yy_cp = yy_bp + 7;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 49 "sinatx.l"
-{yylval.commands=language::Commands::STOP;
+#line 73 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.commands=language::Commands::STOP;
 			return OSTANOV;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 51 "sinatx.l"
-{return GDEYA;}
+#line 76 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return GDEYA;}
 	YY_BREAK
 case 28:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 52 "sinatx.l"
-{yylval.commands=language::Commands::LOOK;
+#line 78 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.commands=language::Commands::LOOK;
 			return SMOTRI;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 54 "sinatx.l"
-{return ARROW;}
+#line 81 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return ARROW;}
 	YY_BREAK
 case 30:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 55 "sinatx.l"
-{yylval.sides=language::Sides::FRONT;
+#line 83 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.sides=language::Sides::FRONT;
 				return  PERED;}
 	YY_BREAK
 case 31:
@@ -1227,8 +1306,9 @@ case 31:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 57 "sinatx.l"
-{yylval.sides=language::Sides::BACK;
+#line 86 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.sides=language::Sides::BACK;
 				return  ZAD;}
 	YY_BREAK
 case 32:
@@ -1236,8 +1316,9 @@ case 32:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 59 "sinatx.l"
-{yylval.sides=language::Sides::RIGHT;
+#line 89 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.sides=language::Sides::RIGHT;
 				return  PRAVO;}
 	YY_BREAK
 case 33:
@@ -1245,8 +1326,9 @@ case 33:
 yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 61 "sinatx.l"
-{yylval.sides=language::Sides::LEFT;
+#line 92 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.sides=language::Sides::LEFT;
 				return  LEVO;}
 	YY_BREAK
 case 34:
@@ -1254,89 +1336,101 @@ case 34:
 yy_c_buf_p = yy_cp = yy_bp + 9;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 63 "sinatx.l"
-{return FUNC;}
+#line 95 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return FUNC;}
 	YY_BREAK
 case 35:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 9;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 64 "sinatx.l"
-{return VCLUCHIT;}
+#line 97 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return VCLUCHIT;}
 	YY_BREAK
 case 36:
 *yy_cp = yy_hold_char; /* undo effects of setting up yytext */
 yy_c_buf_p = yy_cp = yy_bp + 3;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 65 "sinatx.l"
-{return ADR;}
+#line 99 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return ADR;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 66 "sinatx.l"
-{return FIELD_OPER;}
+#line 101 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return FIELD_OPER;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 67 "sinatx.l"
-{return *yytext;}
+#line 103 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return *yytext;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 68 "sinatx.l"
-{yylval.ch_=*(yytext+1);
+#line 105 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.ch_=*(yytext+1);
 	return CHAR;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 70 "sinatx.l"
-{yylval.ch_='\n';
+#line 108 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.ch_='\n';
 	return CHAR;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 72 "sinatx.l"
-{yylval.ch_='\t';
+#line 111 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.ch_='\t';
 	return CHAR;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 74 "sinatx.l"
-{yylval.ch_='\0';
+#line 114 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.ch_='\0';
 	return CHAR;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 76 "sinatx.l"
-{yylval.string = new std::string(yytext+1);
+#line 117 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.string = new std::string(yytext+1);
 	return CONSTSTRING;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "sinatx.l"
-{yylval.string=new std::string(yytext);
+#line 120 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			yylval.string=new std::string(yytext);
 			return name;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 81 "sinatx.l"
+#line 124 "sinatx.l"
 {};
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 83 "sinatx.l"
-yyerror(yytext);
+#line 126 "sinatx.l"
+{yylloc.last_line=yylloc.first_line=yylineno;
+			return *yytext;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 85 "sinatx.l"
+#line 129 "sinatx.l"
 ECHO;
 	YY_BREAK
-#line 1338 "lex.yy.cpp"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1432 "lex.yy.cpp"
+			case YY_STATE_EOF(INITIAL):
+				yyterminate();
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1614,15 +1708,12 @@ static yy_state_type yy_get_previous_state()
 	register char *yy_cp;
 
 	yy_current_state = yy_start;
+	yy_state_ptr = yy_state_buf;
+	*yy_state_ptr++ = yy_current_state;
 
 	for ( yy_cp = yytext_ptr + YY_MORE_ADJ; yy_cp < yy_c_buf_p; ++yy_cp )
 		{
 		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-		if ( yy_accept[yy_current_state] )
-			{
-			yy_last_accepting_state = yy_current_state;
-			yy_last_accepting_cpos = yy_cp;
-			}
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
@@ -1630,6 +1721,7 @@ static yy_state_type yy_get_previous_state()
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+		*yy_state_ptr++ = yy_current_state;
 		}
 
 	return yy_current_state;
@@ -1650,14 +1742,8 @@ yy_state_type yy_current_state;
 #endif
 	{
 	register int yy_is_jam;
-	register char *yy_cp = yy_c_buf_p;
 
 	register YY_CHAR yy_c = 1;
-	if ( yy_accept[yy_current_state] )
-		{
-		yy_last_accepting_state = yy_current_state;
-		yy_last_accepting_cpos = yy_cp;
-		}
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
@@ -1666,6 +1752,8 @@ yy_state_type yy_current_state;
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 246);
+	if ( ! yy_is_jam )
+		*yy_state_ptr++ = yy_current_state;
 
 	return yy_is_jam ? 0 : yy_current_state;
 	}
@@ -1708,6 +1796,8 @@ register char *yy_bp;
 
 	*--yy_cp = (char) c;
 
+	if ( c == '\n' )
+		--yylineno;
 
 	yytext_ptr = yy_bp;
 	yy_hold_char = *yy_cp;
@@ -1784,6 +1874,8 @@ static int input()
 	*yy_c_buf_p = '\0';	/* preserve yytext */
 	yy_hold_char = *++yy_c_buf_p;
 
+	if ( c == '\n' )
+		++yylineno;
 
 	return c;
 	}
@@ -2220,5 +2312,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 85 "sinatx.l"
+#line 129 "sinatx.l"
 

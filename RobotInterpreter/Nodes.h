@@ -68,7 +68,12 @@ namespace language {
 	public:
 		Var(std::string name,std::int16_t lino): Leaf(lino), name(name)  {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame>mem) override {
-			return  (*mem)[name]; 
+			try {
+				return  (*mem)[name];
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual  ~Var() override {};
 	};
@@ -82,7 +87,7 @@ namespace language {
 				children_[1] = c2;
 			}
 			else
-				throw SintaxTree_Exception("One of operands of binary operator has been missed");
+				throw Script_error("One of operands of binary operator has been missed", lino_);
 		}
 		virtual ~Binary_expression() override{}
 	};
@@ -94,13 +99,17 @@ namespace language {
 		Addittion_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino,c1,c2) {}
 
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) + *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of + has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) + *(r2.value()));
+				else
+					throw Script_error("One of operands of + has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Addittion_expression()override{}
 	};
@@ -109,12 +118,17 @@ namespace language {
 	public:
 		Substract_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) - *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of - has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) - *(r2.value()));
+				else
+					throw Script_error("One of operands of - has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Substract_expression() override{}
 	};
@@ -125,12 +139,18 @@ namespace language {
 	public:
 		Multiply_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) * *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of * has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) * *(r2.value()));
+				else
+					throw Script_error("One of operands of * has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
+
 		}
 		virtual ~Multiply_expression() override{ }
 	};
@@ -140,12 +160,17 @@ namespace language {
 	public:
 		Divide_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) / *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of / has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) / *(r2.value()));
+				else
+					throw Script_error("One of operands of / has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Divide_expression() override{}
 	};
@@ -153,19 +178,24 @@ namespace language {
 	public:
 		Disjunction_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
+			try {
+				auto r1 = children_[0]->pass(mem);
 
-			if (r1 && !(bool)*(r1.value()->getData())) {
-				auto r2 = children_[1]->pass(mem);
-				if (r2)
-					return std::make_shared<MemoryCell>(*(r2.value()));
-				else
-					throw SintaxTree_Exception("One of operands of || has been missed");
+				if (r1 && !(bool)*(r1.value()->getData())) {
+					auto r2 = children_[1]->pass(mem);
+					if (r2)
+						return std::make_shared<MemoryCell>(*(r2.value()));
+					else
+						throw Script_error("One of operands of || has been missed");
+				}
+
+				else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
+
+				else	throw Script_error("One of operands of || has been missed");
 			}
-
-			else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
-
-			else	throw SintaxTree_Exception("One of operands of || has been missed");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Disjunction_expression() override {}
 	};
@@ -174,17 +204,22 @@ namespace language {
 	public:
 		Conjunction_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			if (r1 && (bool)*(r1.value()->getData())) {
-				auto r2 = children_[1]->pass(mem);
-				if (r2)
-					return std::make_shared<MemoryCell>( *(r2.value()));
-				else
-					throw SintaxTree_Exception("One of operands of && has been missed");
-			}
-			else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
+			try {
+				auto r1 = children_[0]->pass(mem);
+				if (r1 && (bool)*(r1.value()->getData())) {
+					auto r2 = children_[1]->pass(mem);
+					if (r2)
+						return std::make_shared<MemoryCell>(*(r2.value()));
+					else
+						throw Script_error("One of operands of && has been missed");
+				}
+				else if (r1)	return std::make_shared<MemoryCell>(*(r1.value()));
 
-			else	throw SintaxTree_Exception("One of operands of && has been missed");
+				else	throw Script_error("One of operands of && has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Conjunction_expression() override {}
 	};
@@ -193,12 +228,17 @@ namespace language {
 	public:
 		More_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) > *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of > has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) > *(r2.value()));
+				else
+					throw Script_error("One of operands of > has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~More_expression() override {}
 	};
@@ -207,12 +247,17 @@ namespace language {
 	public:
 		Less_expression(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1, c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				return std::make_shared<MemoryCell>(*(r1.value()) < *(r2.value()));
-			else
-				throw SintaxTree_Exception("One of operands of <has been missed");
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					return std::make_shared<MemoryCell>(*(r1.value()) < *(r2.value()));
+				else
+					throw Script_error("One of operands of <has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Less_expression() override {}
 	};
@@ -223,25 +268,35 @@ namespace language {
 		std::shared_ptr<Node> child_;
 	public:
 		FieldAccess_expression(std::int16_t lino, std::string field, std::shared_ptr<Node>c):Node(lino),child_(c)  {
-			if (field == "x")
-				field_ = YFields::X;
-			else if (field == "y")
-				field_ = YFields::Y;
-			else {
-				if (field == "busy")
-					field_ = YFields::BUSY;
-				else throw SintaxTree_Exception("There is no such field in yacheyka.");
+			try {
+				if (field == "x")
+					field_ = YFields::X;
+				else if (field == "y")
+					field_ = YFields::Y;
+				else {
+					if (field == "busy")
+						field_ = YFields::BUSY;
+					else throw Script_error("There is no such field in yacheyka.");
+				}
+				if (!c)
+					throw Script_error("left operand of => missed.");
 			}
-			if (!c)
-				throw SintaxTree_Exception("left operand of => missed.");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r = child_->pass(mem);
-			if (r)
-				return std::make_shared<MemoryCell>(field_<=*(r.value()));
-			else
-				throw SintaxTree_Exception("One of operands of =>has been missed");
+			try {
+				auto r = child_->pass(mem);
+				if (r)
+					return std::make_shared<MemoryCell>(field_ <= *(r.value()));
+				else
+					throw Script_error("One of operands of =>has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~FieldAccess_expression() override {}
 	};
@@ -251,8 +306,13 @@ namespace language {
 		std::shared_ptr<Node> child_;
 	public:
 		Unary_expression(std::int16_t lino, std::shared_ptr<Node> child_) : Node(lino), child_(child_) {
-			if (!child_)
-				throw SintaxTree_Exception("Operand missed");
+			try {
+				if (!child_)
+					throw Script_error("Operand missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 	};
 
@@ -261,11 +321,16 @@ namespace language {
 		UnaryMinus_expression(std::int16_t lino, std::shared_ptr<Node> child_): Unary_expression(lino,child_) {}
 		
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r = child_->pass(mem);
-			if (r)
-				return std::make_shared<MemoryCell>(-*(r.value()));
-			else
-				throw SintaxTree_Exception("One of operands of unary - has been missed");
+			try {
+				auto r = child_->pass(mem);
+				if (r)
+					return std::make_shared<MemoryCell>(-*(r.value()));
+				else
+					throw Script_error("One of operands of unary - has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~UnaryMinus_expression() override{}
 	};
@@ -276,11 +341,16 @@ namespace language {
 	public:
 		LogicInversion_expression(std::int16_t lino, std::shared_ptr<Node> child_) : Unary_expression(lino, child_) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r = child_->pass(mem);
-			if (r)
-				return std::make_shared<MemoryCell>(~*(r.value()));
-			else
-				throw SintaxTree_Exception("One of operands of ~ has been missed");
+			try {
+				auto r = child_->pass(mem);
+				if (r)
+					return std::make_shared<MemoryCell>(~*(r.value()));
+				else
+					throw Script_error("One of operands of ~ has been missed");
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~LogicInversion_expression() override{}
 	};
@@ -293,31 +363,36 @@ namespace language {
 	public:
 		TypeCheck_expression(std::int16_t lino, std::shared_ptr<Node> c1_,std::shared_ptr<Node> c2_ ):Node(lino), c1_(c1_), c2_(c2_){
 			if (!c1_ || !c2_)
-				throw SintaxTree_Exception("Operand of typecheck missed.");
+				throw Script_error("Operand of typecheck missed.");
 		}
 		TypeCheck_expression(std::int16_t lino, std::shared_ptr<Node> c1_, Types type) :Node(lino), c1_(c1_), t1_(type), c2_(nullptr) {
 			if(!c1_)
-				throw SintaxTree_Exception("Operand of typecheck missed.");
+				throw Script_error("Operand of typecheck missed.");
 		}
 		TypeCheck_expression(std::int16_t lino, Types  t1, Types t2) :Node(lino), t1_(t1), t2_(t2), c1_(nullptr),c2_(nullptr) {}
 	
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			if (c1_ && c2_) {
-				auto r1 = c1_->pass(mem);
-				auto r2 = c2_->pass(mem);
-				if (r1 && r2) {
-					return std::make_shared<MemoryCell>(MemoryCell::checkTypes(*r1.value(), *r2.value()));
+			try {
+				if (c1_ && c2_) {
+					auto r1 = c1_->pass(mem);
+					auto r2 = c2_->pass(mem);
+					if (r1 && r2) {
+						return std::make_shared<MemoryCell>(MemoryCell::checkTypes(*r1.value(), *r2.value()));
+					}
 				}
+				else if (c1_) {
+					auto r = c1_->pass(mem);
+					if (r)
+						return std::make_shared<MemoryCell>(MemoryCell::checkTypes(*r.value(), t1_));
+				}
+				else {
+					return std::make_shared<MemoryCell>(MemoryCell::checkTypes(t2_, t1_));
+				}
+				throw Script_error("Incorrect operands for typeCheck");
 			}
-			else if (c1_) {
-				auto r = c1_->pass(mem);
-				if(r)
-					return std::make_shared<MemoryCell>(MemoryCell::checkTypes(*r.value(), t1_));
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
 			}
-			else {
-				return std::make_shared<MemoryCell>(MemoryCell::checkTypes(t2_, t1_));
-			}
-			throw SintaxTree_Exception("Incorrect operands for typeCheck");
 		}
 		virtual ~TypeCheck_expression()override {}
 	};
@@ -329,20 +404,25 @@ namespace language {
 	public:
 		ArrayIndaxation_expression(std::int16_t lino, std::shared_ptr<Node> arrptr, std::list<std::shared_ptr<Node>> index): Node(lino),children_(arrptr), path_(index) {
 		if(!children_)
-			throw SintaxTree_Exception("array pointer missed.");
+			throw Script_error("array pointer missed.");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_->pass(mem);
-			std::vector<int> r2;
-			for (auto a : path_) {
-				auto tmp = a->pass(mem);
-				if (tmp)
-					r2.push_back((int)*(tmp.value()->getData()));
-				else throw SintaxTree_Exception("Incorrect array path.");
+			try {
+				auto r1 = children_->pass(mem);
+				std::vector<int> r2;
+				for (auto a : path_) {
+					auto tmp = a->pass(mem);
+					if (tmp)
+						r2.push_back((int)*(tmp.value()->getData()));
+					else throw Script_error("Incorrect array path.");
+				}
+				if (!r1)
+					throw Script_error("Incorrect array.");
+				return std::make_shared<MemoryCell>((*r1.value())[r2]);
 			}
-			if(!r1)
-				throw SintaxTree_Exception("Incorrect array.");
-			return std::make_shared<MemoryCell>((*r1.value())[r2]);
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~ArrayIndaxation_expression() override{}
 	};
@@ -351,11 +431,16 @@ namespace language {
 	public:
 		DimensionOperator(std::int16_t lino, std::shared_ptr<Node> arrptr) : Unary_expression(lino, arrptr) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = child_->pass(mem);
-			if (r1) {
-				return std::make_shared<MemoryCell>((*r1.value()).arrayDimension());
+			try {
+				auto r1 = child_->pass(mem);
+				if (r1) {
+					return std::make_shared<MemoryCell>((*r1.value()).arrayDimension());
+				}
+				throw Script_error("Incorrect array.");
 			}
-			throw SintaxTree_Exception("Incorrect array.");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 	};
 
@@ -363,11 +448,16 @@ namespace language {
 	public:
 		StarOperator(std::int16_t lino, std::shared_ptr<Node> arrptr) : Unary_expression(lino, arrptr) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = child_->pass(mem);
-			if (r1) {
-				return std::make_shared<MemoryCell>(*(*r1.value()));
+			try {
+				auto r1 = child_->pass(mem);
+				if (r1) {
+					return std::make_shared<MemoryCell>(*(*r1.value()));
+				}
+				throw Script_error("Pointer type expected");
 			}
-			throw SintaxTree_Exception("Pointer type expected");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 	};
 
@@ -387,17 +477,22 @@ namespace language {
 			name_ = name;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			memTable_ = mem;
-			memTable_->insert(var);
-			if (init_expression_) {
-				auto r1 = init_expression_->pass(mem);
-				if (r1) {
-					*var = r1.value();
+			try {
+				memTable_ = mem;
+				memTable_->insert(var);
+				if (init_expression_) {
+					auto r1 = init_expression_->pass(mem);
+					if (r1) {
+						*var = r1.value();
+					}
+					else
+						throw Script_error("value expected.");
 				}
-				else
-					throw SintaxTree_Exception("value expected.");
+				return var;
 			}
-			return var;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		const std::string& getName() {
 			return name_;
@@ -419,18 +514,23 @@ namespace language {
 			name_ = name;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			memTable_ = mem;
-			memTable_->insert(var);
-			std::optional < std::shared_ptr<MemoryCell>> tmp[3];
-			for (int i = 0; i < 3; i++)
-				tmp[i] = init_expression_[i]->pass(mem);
-			if (tmp[0] && tmp[1] && tmp[2]) {
-				auto yach = std::make_shared<Square>((int)*(tmp[0].value()->getData()), (int)*(tmp[1].value()->getData()), (bool)*(tmp[2].value()->getData()));
-				*var = std::make_shared<MemoryCell>(yach);
+			try {
+				memTable_ = mem;
+				memTable_->insert(var);
+				std::optional < std::shared_ptr<MemoryCell>> tmp[3];
+				for (int i = 0; i < 3; i++)
+					tmp[i] = init_expression_[i]->pass(mem);
+				if (tmp[0] && tmp[1] && tmp[2]) {
+					auto yach = std::make_shared<Square>((int)*(tmp[0].value()->getData()), (int)*(tmp[1].value()->getData()), (bool)*(tmp[2].value()->getData()));
+					*var = std::make_shared<MemoryCell>(yach);
+				}
+				else
+					throw Script_error("Yacheyka initialization value expected.");
+				return std::nullopt;
 			}
-			else
-				throw SintaxTree_Exception("Yacheyka initialization value expected.");
-			return std::nullopt;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		const std::string& getName() {
 			return name_;
@@ -447,19 +547,24 @@ namespace language {
 			delete operLst;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			memTable_ = mem;
-			std::vector<int> tmp;
-			for (auto a : operLst_) {
-				auto r = a->pass(mem);
-				if (r)
-					tmp.push_back((int)*(r.value()->getData()));
-				else
-					throw SintaxTree_Exception("Array initialization expected.");
+			try {
+				memTable_ = mem;
+				std::vector<int> tmp;
+				for (auto a : operLst_) {
+					auto r = a->pass(mem);
+					if (r)
+						tmp.push_back((int)*(r.value()->getData()));
+					else
+						throw Script_error("Array initialization expected.");
+				}
+				auto arr = std::make_shared<Array>(tmp);
+				auto var = std::make_shared<Variable>(name_, arr);
+				memTable_->insert(var);
+				return std::nullopt;
 			}
-			auto arr = std::make_shared<Array>(tmp);
-			auto var = std::make_shared<Variable>(name_, arr);
-			memTable_->insert(var);
-			return std::nullopt;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		const std::string& getName() {
 			return name_;
@@ -484,38 +589,47 @@ namespace language {
 			fptr_->setPtr(this);		
 		}
 		std::optional<std::shared_ptr<MemoryCell>> funcCal(std::list < std::shared_ptr<MemoryCell>>& args) {
-			std::shared_ptr<MemoryFrame> stackFrame = std::make_shared<MemoryFrame>(memTable_);
-			auto argsIter = args.begin();
-			for (auto a : params_) {
-				auto varAlloc = std::make_shared<Variable>(a.name, a.type, a.isPtr);
-				*varAlloc = (*argsIter++);
-				stackFrame->insert(varAlloc);
-			}
-			std::shared_ptr<Variable> result;
-			if (tp_) {
-				result = std::make_shared<Variable>("rezultat", tp_.value(), isPtr);
-				stackFrame->insert(result);
-			}
-			if (body_) {
-				body_->pass(stackFrame);
-				if (tp_)
-					return result;
+			try {
+				std::shared_ptr<MemoryFrame> stackFrame = std::make_shared<MemoryFrame>(memTable_);
+				auto argsIter = args.begin();
+				for (auto a : params_) {
+					auto varAlloc = std::make_shared<Variable>(a.name, a.type, a.isPtr);
+					*varAlloc = (*argsIter++);
+					stackFrame->insert(varAlloc);
+				}
+				std::shared_ptr<Variable> result;
+				if (tp_) {
+					result = std::make_shared<Variable>("rezultat", tp_.value(), isPtr);
+					stackFrame->insert(result);
+				}
+				if (body_) {
+					body_->pass(stackFrame);
+					if (tp_)
+						return result;
+					else
+						return std::nullopt;
+				}
+				else if (tp_)
+					throw Script_error("Result value missed.");
 				else
 					return std::nullopt;
 			}
-			else if (tp_)
-				throw Call_error("Result value missed.");
-			else
-				return std::nullopt;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		constexpr virtual int priority() const noexcept override {
 			return 1;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-
-			mem->insert(name_, fptr_);
-			memTable_ = mem;
-			return std::nullopt;
+			try {
+				mem->insert(name_, fptr_);
+				memTable_ = mem;
+				return std::nullopt;
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~FunDeclaration_expression() override{}
 	};
@@ -529,25 +643,30 @@ namespace language {
 			delete params;
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			std::list<std::shared_ptr<MemoryCell>> tmp;
-			for(auto a: params_){
-				if (a) {
-					auto tmp2 = a->pass(mem);
-					if (tmp2)
-						tmp.push_back(tmp2.value());
-					else throw Call_error("Incorrect expression. Can't be a parametr");
+			try {
+				std::list<std::shared_ptr<MemoryCell>> tmp;
+				for (auto a : params_) {
+					if (a) {
+						auto tmp2 = a->pass(mem);
+						if (tmp2)
+							tmp.push_back(tmp2.value());
+						else throw Script_error("Incorrect expression. Can't be a parametr");
+					}
+					else throw Script_error("Incorrect expression. Can't be a parametr");
 				}
-				else throw Call_error("Incorrect expression. Can't be a parametr");
+				fcall fun;
+				fun.name = name_;
+				fun.arg = tmp;
+				auto fptr = (*mem)[fun];
+				auto target_func = fptr->getPtr();
+				if (target_func)
+					return dynamic_cast<FunDeclaration_expression*>(target_func.value())->funcCal(fun.arg);
+				else
+					return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.arg);
 			}
-			fcall fun;
-			fun.name = name_;
-			fun.arg = tmp;
-			auto fptr = (*mem)[fun];
-			auto target_func = fptr->getPtr();
-			if (target_func)
-				return dynamic_cast<FunDeclaration_expression*>(target_func.value())->funcCal(fun.arg);
-			else
-				 return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.arg);
+			catch(Script_error e ){
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual  ~Function_call() override {};
 	};
@@ -556,12 +675,17 @@ namespace language {
 	public:
 		Assigment_node(std::int16_t lino, std::shared_ptr<Node> c1, std::shared_ptr<Node> c2) : Binary_expression(lino, c1,c2) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto r1 = children_[0]->pass(mem);
-			auto r2 = children_[1]->pass(mem);
-			if (r1 && r2)
-				*(r1.value()) = r2.value();
-			else throw SintaxTree_Exception("Incorrect operands in assigment expression");
-			return r1.value();
+			try {
+				auto r1 = children_[0]->pass(mem);
+				auto r2 = children_[1]->pass(mem);
+				if (r1 && r2)
+					*(r1.value()) = r2.value();
+				else throw Script_error("Incorrect operands in assigment expression");
+				return r1.value();
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 
 		}
 		virtual  ~Assigment_node() override {};
@@ -578,28 +702,33 @@ namespace language {
 			std::shared_ptr<Node> loop_body, bool declaration=false) : Node(lino), fst_conditon_(fst_conditon), last_conditon_(last_conditon),
 			loop_body_(loop_body){
 			if (!fst_conditon || !last_conditon)
-				throw SintaxTree_Exception("incorrect tsikl declaration");
+				throw Script_error("incorrect tsikl declaration");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			memTable_ = std::make_shared<MemoryFrame>(mem);
-			auto fst = fst_conditon_->pass(memTable_);
-			int ff = 0;
-			auto last = last_conditon_->pass(memTable_);
-			if (fst && last) {
-				auto one = *std::make_shared<MemoryCell>(std::make_shared<Math_type<int>>(1,Types::INT));
-				auto i = fst.value();
-				auto j = last.value();
-				auto jj = *j + one;
-				i->applyValueChange();
-				for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) +one )) {
-					if (loop_body_&&robot::Robot::AllowScriptExecution) {
-						auto mem2 = std::make_shared<MemoryFrame>(memTable_);
-						loop_body_->pass(mem2);
+			try {
+				memTable_ = std::make_shared<MemoryFrame>(mem);
+				auto fst = fst_conditon_->pass(memTable_);
+				int ff = 0;
+				auto last = last_conditon_->pass(memTable_);
+				if (fst && last) {
+					auto one = *std::make_shared<MemoryCell>(std::make_shared<Math_type<int>>(1, Types::INT));
+					auto i = fst.value();
+					auto j = last.value();
+					auto jj = *j + one;
+					i->applyValueChange();
+					for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) + one)) {
+						if (loop_body_ && robot::Robot::AllowScriptExecution) {
+							auto mem2 = std::make_shared<MemoryFrame>(memTable_);
+							loop_body_->pass(mem2);
+						}
 					}
 				}
+				memTable_->clear();
+				return std::nullopt;
 			}
-			memTable_->clear();
-			return std::nullopt;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual  ~For_loop() override {};
 	};
@@ -612,22 +741,27 @@ namespace language {
 		While_loop(std::int16_t lino, std::shared_ptr<Node> conditon,
 		std::shared_ptr<Node> body_ ): Node(lino), conditon_(conditon), body_(body_){
 			if (!conditon_) 
-				throw SintaxTree_Exception("incorrect tsikl declaration");
+				throw Script_error("incorrect tsikl declaration");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			memTable_ = std::make_shared<MemoryFrame>(mem);
 			try {
-				while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData())&&robot::Robot::AllowScriptExecution)
-				{
-					if (body_) {
-						body_->pass(memTable_);
-						memTable_->clear();
+				memTable_ = std::make_shared<MemoryFrame>(mem);
+				try {
+					while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData()) && robot::Robot::AllowScriptExecution)
+					{
+						if (body_) {
+							body_->pass(memTable_);
+							memTable_->clear();
+						}
 					}
+					return std::nullopt;
 				}
-				return std::nullopt;
+				catch (std::bad_optional_access e) {
+					throw Script_error("Loop's invariant must be logicheskoye or convertable to logicheskoye");
+				}
 			}
-			catch (std::bad_optional_access e) {
-				throw SintaxTree_Exception("Loop's invariant must be logicheskoye or convertable to logicheskoye");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
 			}
 		}
 		virtual ~While_loop() override{}
@@ -642,20 +776,25 @@ namespace language {
 		Condition_expression(std::int16_t lino, std::shared_ptr<Node> conditon,
 			std::shared_ptr<Node> body_, std::shared_ptr<Node> else_=nullptr) : Node(lino), conditon_(conditon), body_(body_), else_body_(else_) {
 			if(!body_|| !conditon_)
-				throw SintaxTree_Exception("incorrect IF declaration");
+				throw Script_error("incorrect IF declaration");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto fst = conditon_->pass(mem);
-			memTable_ = std::make_shared<MemoryFrame>(mem);
-			if (fst) {
-				if ((bool)(*(fst.value()->getData())))
-					body_->pass(memTable_);
-				else if (else_body_)
-					else_body_->pass(memTable_);
-				memTable_->clear();
-				return std::nullopt;
+			try {
+				auto fst = conditon_->pass(mem);
+				memTable_ = std::make_shared<MemoryFrame>(mem);
+				if (fst) {
+					if ((bool)(*(fst.value()->getData())))
+						body_->pass(memTable_);
+					else if (else_body_)
+						else_body_->pass(memTable_);
+					memTable_->clear();
+					return std::nullopt;
+				}
+				throw Script_error("Missed condition.");
 			}
-			throw Type_error("Missed condition.");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Condition_expression() override {}
 	};
@@ -666,24 +805,29 @@ namespace language {
 	public:
 		Pointer_get_expr(std::int16_t lino, std::shared_ptr<Node> ptr): Node(lino), ptr_(ptr){
 			if(!ptr)
-				throw SintaxTree_Exception("right operand of GET POINTER missed");
+				throw Script_error("right operand of GET POINTER missed");
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			auto fst = ptr_->pass(mem);
-			if (fst) {
-				if (fst.value()->getData()->getType() != Types::POINTER 
-					&& fst.value()->isInMemory()
-					&& fst.value()->getData()->getHideType()!=Types::LINK) {
+			try {
+				auto fst = ptr_->pass(mem);
+				if (fst) {
+					if (fst.value()->getData()->getType() != Types::POINTER
+						&& fst.value()->isInMemory()
+						&& fst.value()->getData()->getHideType() != Types::LINK) {
 
-					std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(fst.value()->getData());
-					return std::make_shared<MemoryCell>(tmp);
+						std::shared_ptr<Pointer> tmp = std::make_shared<Pointer>(fst.value()->getData());
+						return std::make_shared<MemoryCell>(tmp);
+					}
+					else if (fst.value()->isInMemory())
+						throw Script_error("The expression must have the type of an independent object. (not a pointer and not an array element)");
+					else
+						throw Script_error("Trying to get pointer to constant expression.");
 				}
-				else if (fst.value()->isInMemory())
-					throw Type_error("The expression must have the type of an independent object. (not a pointer and not an array element)");
-				else
-					throw Type_error("Trying to get pointer to constant expression.");
+				throw Script_error("Missed operand. Expression exprected;");
 			}
-			throw SintaxTree_Exception("Missed operand. Expression exprected;");
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		virtual ~Pointer_get_expr() override {}
 	};
@@ -694,14 +838,24 @@ namespace language {
 	public:
 		Command_list(std::int16_t lino, std::list<std::pair<Commands, std::optional<Sides>>>& lst): Node(lino),command_que_(lst){}
 		void addCommand(Commands cmd, std::optional<Sides> sd = {}) {
-			if (cmd == Commands::ROTATE &&
-				(sd == Sides::FRONT || sd == Sides::BACK))
-				throw Robot_error("Rotate front and rotate back - undefined.");
-			command_que_.push_back(std::make_pair(cmd, sd));
+			try {
+				if (cmd == Commands::ROTATE &&
+					(sd == Sides::FRONT || sd == Sides::BACK))
+					throw Script_error("Rotate front and rotate back - undefined.");
+				command_que_.push_back(std::make_pair(cmd, sd));
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-					return robot::Robot::doCommands(command_que_);
+			try {
+				return robot::Robot::doCommands(command_que_);
+			}
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 	};
 
@@ -721,12 +875,17 @@ namespace language {
 				santenceLst_.push_front(santance);
 		}
 		virtual std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override {
-			for (auto a : santenceLst_) {
-				if (robot::Robot::AllowScriptExecution)
-					a->pass(mem);
-				else break;
+			try {
+				for (auto a : santenceLst_) {
+					if (robot::Robot::AllowScriptExecution)
+						a->pass(mem);
+					else break;
+				}
+				return std::nullopt;
 			}
-			return std::nullopt;
+			catch (Script_error e) {
+				throw Script_error(e, lino_);
+			}
 		}
 		void initMemory(std::shared_ptr<MemoryFrame> global = nullptr) {
 			memTable_ = std::make_shared<MemoryFrame>(global);

@@ -78,10 +78,34 @@ program:
 	 program stmt {(**$1).addStatement(*$2);
 			$$=$1; delete $2;
 			root =$$;}
-	| program error {/*Здесь будет про ошибку*/}
 	| {$$=new std::shared_ptr<language::Statement_list>();
 		(*$$)=std::make_shared<Statement_list>(1);
 		root =$$;}
+	| program FOR error {std::cout<<"Incorrect TSIKL declaration. Loop body expected. Line: "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program WHILE error {std::cout<<"Incorrect POKA loop declaration. Loop body expected. Line: "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program IF error {std::cout<<"Incorrect conditional operator declaration. Line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program BEGIN_ error {std::cout<<"Missed end of block. KONETS expected in pair with NACHALO in line: "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program robot_oper error {std::cout<<"Incorrect declaretion of list of robot directives in line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program command_word error {std::cout<<"Incorrect robot command declaration. ->SIDE expected in line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program FUNC error {std::cout<<"Incorrect function declaration in line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	| program PROVERKA error {std::cout<<"Incorrect usage of type check operator in line:  "<<@3.first_line<<std::endl;
+			yyerrok;
+			$$=$1;}
+	
 	;
 
 
@@ -108,18 +132,20 @@ stmt:
 	| FOR '(' expr ':' expr ')' stmt {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<For_loop>(1,*$3,*$5,*$7);
 					delete $3; delete $5; delete $7;}
-
+	
+			
 	| WHILE '(' expr ')' stmt {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<While_loop>(1,*$3,*$5);
 					delete $3; delete $5;} 
-
+	
 	| IF '(' expr ')' stmt %prec IFX {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<Condition_expression>(1,*$3,*$5);
 					delete $3; delete $5;} 
-
+	
 	| IF '(' expr ')' stmt ELSE stmt {$$=new std::shared_ptr<Node>();
 					*$$=std::make_shared<Condition_expression>(1,*$3,*$5,*$7);
 					delete $3; delete $5; delete $7;}
+	
 	| fdecl {$$=$1;}
 	| BEGIN_ stmt_lst END {
 		$$=new std::shared_ptr<Node>();
@@ -127,7 +153,9 @@ stmt:
 		delete $2;
 		}
 	| BEGIN_ END {$$=new std::shared_ptr<Node>();
-	*$$=nullptr;}
+				*$$=nullptr;}
+	
+
 	;
 
 robot_oper:
@@ -135,7 +163,7 @@ robot_oper:
 			*$$= std::make_shared<Command_list>(1,*$1);
 			delete $1;}
 	| robot_oper ARROW robot_command {
-				auto cmd = (*($2)).front;
+				auto cmd = (*($3)).front();
 				(*$1)->addCommand(cmd.first, cmd.second);
 				$$=$1;
 				delete $3;
@@ -147,6 +175,7 @@ robot_command:
 			(*$$).push_back(std::make_pair($1,$3));}
 	| OSTANOV {$$ = new std::list<std::pair<language::Commands, std::optional<Sides>>>();
 			(*$$).push_back(std::make_pair($1,std::nullopt));}
+
 	;
 
 command_word:
@@ -353,6 +382,7 @@ check:
 		$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<TypeCheck_expression>(1,$2,$3);
 		}
+
 	;
 
 
@@ -397,15 +427,29 @@ str=c;
 std::cout<<str<<std::endl;
 }
 
+namespace robot {
+    bool Robot::AllowScriptExecution = true;
+    bool Robot::isOnFly = false;
+    Square Robot::position{};
+    int Robot::rotation = 0;
+
+    Square Labitinth::exit_{};
+    std::vector<std::vector<bool>>Labitinth::walls{};
+}
+
+#include "lex.yy.cpp"
 void main(){
  
  //yydebug = 300;
- for(int i=0;i<1500000; i++){
- fopen_s(&yyin, "pipa.txt", "r");
-    yyparse();
-    (*root)->initMemory(initStLib());
-    (*root)->pass();
-	delete root;
-	 fclose(yyin);
-	}
+    for (int i = 0; i < 1500000; i++) {
+        if (yynerrs <= 0) {
+            fopen_s(&yyin, "pipa.txt", "r");
+            yyparse();
+            (*root)->initMemory(initStLib());
+            (*root)->pass();
+            delete root;
+            fclose(yyin);
+        }
+        else std::cout << "Errors detected: " << yynerrs << std::endl;
+    }
 }

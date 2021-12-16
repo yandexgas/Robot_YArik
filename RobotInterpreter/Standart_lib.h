@@ -46,7 +46,7 @@ namespace language {
 				std::cout << (char)*(b);
 				break;
 			default:
-				throw Call_error("No function with such tipes of parametrs.");
+				throw Script_error("No function with such tipes of parametrs.");
 				break;
 			}
 			return std::nullopt;
@@ -159,7 +159,7 @@ namespace language {
 			}
 				break;
 			default:
-				throw Call_error("No function with such tipes of parametrs.");
+				throw Script_error("No function with such tipes of parametrs.");
 				break;
 			}
 		}

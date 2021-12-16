@@ -96,16 +96,16 @@ namespace language {
 		virtual void operator=(std::shared_ptr<Type>) = 0;
 		virtual std::shared_ptr<Type> makeClone() const noexcept = 0;
 		explicit virtual operator int() {
-			throw Type_error("This type can't be converted to tseloye.");
+			throw Script_error("This type can't be converted to tseloye.");
 		}
 		explicit virtual operator float() {
-			throw Type_error("This type can't be converted to drobnoye.");
+			throw Script_error("This type can't be converted to drobnoye.");
 		}
 		explicit virtual operator bool() {
-			throw Type_error("This type can't be converted to logicheskoye.");
+			throw Script_error("This type can't be converted to logicheskoye.");
 		}
 		explicit virtual operator char() {
-			throw Type_error("This type can't be converted to logicheskoye.");
+			throw Script_error("This type can't be converted to logicheskoye.");
 		}
 		virtual ~Type(){}
 	};
@@ -181,7 +181,7 @@ namespace language {
 		std::shared_ptr<Type> operator*() {
 			if(inited)
 				return pointer_;
-			else throw Type_error("Non initiallized memory access.");
+			else throw Script_error("Non initiallized memory access.");
 		}
 		virtual std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Link>((*pointer_).makeClone());
@@ -200,22 +200,22 @@ namespace language {
 		explicit virtual operator int() override {
 			if (inited)
 				return (int)*pointer_;
-			else throw Type_error("Non initiallized memory access.");
+			else throw Script_error("Non initiallized memory access.");
 		}
 		explicit virtual operator float() {
 			if (inited)
 				return (float)*pointer_;
-			else throw Type_error("Non initiallized memory access.");
+			else throw Script_error("Non initiallized memory access.");
 		}
 		explicit virtual operator bool() {
 			if (inited)
 				return (bool)*pointer_;
-			else throw Type_error("Non initiallized memory access.");
+			else throw Script_error("Non initiallized memory access.");
 		}
 		explicit virtual operator char() {
 			if (inited)
 				return (char)*pointer_;
-			else throw Type_error("Non initiallized memory access.");
+			else throw Script_error("Non initiallized memory access.");
 		}
 
 		virtual ~Link() override {}
@@ -243,11 +243,11 @@ namespace language {
 			if (ptr->getType() == Types::POINTER) {
 				auto tmp = std::dynamic_pointer_cast<Pointer>(ptr)->ptr_;
 				if (ptr_ &&  (**tmp).getType() != (**ptr_).getType())
-					throw Type_error("Different pointer tipes");
+					throw Script_error("Different pointer tipes");
 				ptr_ = tmp;
 			}
 			else
-				throw Type_error("Type can not be converted to pointer");
+				throw Script_error("Type can not be converted to pointer");
 		}
 		virtual std::shared_ptr<Type> makeClone() const noexcept override {
 
@@ -299,7 +299,7 @@ namespace language {
 			auto tmp= std::dynamic_pointer_cast<Square>(a);
 			if (tmp)
 				*this = *tmp;
-			else throw Type_error("This object can't be converted to square.");
+			else throw Script_error("This object can't be converted to square.");
 		}
 		virtual operator Square() {
 			return*this;
@@ -389,7 +389,7 @@ namespace language {
 			if (tmp)
 				*this = *tmp;
 			else
-				throw Type_error("Object can't be converted to array.");
+				throw Script_error("Object can't be converted to array.");
 		}
 		size_t getDimensionality()const noexcept {
 			return dimensions_.size();
@@ -399,11 +399,11 @@ namespace language {
 			if (path.size() != dimensions_.size())
 				throw std::out_of_range("Incorrect indexation.");
 			int sz = path.size() - 1;
-			size_t index = path[sz] >= dimensions_[sz] ? throw std::out_of_range("Out of massive range.") : path[sz--];
+			size_t index = path[sz] >= dimensions_[sz] ? throw Script_error("Out of massive range.") : path[sz--];
 
 			for (int multi = 1; sz >= 0; sz--) {
 				if (path[sz] >= dimensions_[sz])
-					throw std::out_of_range("Out of massive range.");
+					throw Script_error("Out of massive range.");
 				multi *= dimensions_[sz];
 				index += path[sz] * multi;
 			}
