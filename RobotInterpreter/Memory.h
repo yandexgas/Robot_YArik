@@ -430,9 +430,9 @@ namespace language {
 				throw Script_error("Argument list expected.");
 			}
 			else {
-				//if (higerFrame_)
+				if (higerFrame_)
 					return (*higerFrame_)[name];
-				//else throw Initial_error("Undeclared variable.");
+				else throw Script_error("Undeclared variable.");
 			}
 		}
 		

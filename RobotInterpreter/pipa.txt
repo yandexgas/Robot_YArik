@@ -1,3 +1,4 @@
+
 poka(1) nachalo
 	gdeya?;
 	tseloye i = smotri->pravo;
