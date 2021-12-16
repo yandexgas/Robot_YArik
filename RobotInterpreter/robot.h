@@ -29,17 +29,17 @@ namespace robot {
 		static Square exit_;
 		static void print(Square& position, bool isOnFly,int rotation) {
 			using namespace std::chrono_literals;
-			std::this_thread::sleep_for(500ms);
+			std::this_thread::sleep_for(1000ms);
 			system("cls");
 			int x =(int)* position.getX();
 			int y = (int)*position.getY();
 			int ex = (int)*exit_.getX();
 			int ey = (int)*exit_.getY();
-			for (int i = 0; i < walls.size(); i++) {
-				for (int j = 0; j < walls[i].size(); j++) {
-					if (walls[i][j])
+			for (int i = walls[0].size()-1; i >=0; i--) {
+				for (int j = 0; j < walls.size() ;  j++) {
+					if (walls[j][i])
 						std::cout << " # ";
-					else if (i == x && j == y) {
+					else if (i == y && j == x) {
 						if (isOnFly)
 							std::cout << "*";
 						else {
@@ -61,7 +61,7 @@ namespace robot {
 						}
 					}
 					else { 
-						if (i == ex && j == ey)
+						if (i == ey && j == ex)
 							std::cout << " O ";
 						else
 							std::cout << " . "; 
@@ -77,19 +77,19 @@ namespace robot {
 				nx += x;
 				ny += y;
 			}
-			if (nx >= walls.size() || ny >= walls[0].size()|| nx<0||ny<0)
+			if (nx >= walls.size() || ny >= walls[0].size()|| nx<0||ny<0||walls[nx][ny])
 				throw Robot_error("Vrezalis v stenu!");
 			if (nx== (int)*exit_.getX() && nx == (int)*exit_.getY()) {
-				position.setX(nx);
-				position.setY(ny);
 				AllowScriptExecution = false;
 			}
+			position.setX(nx);
+			position.setY(ny);
 		}
 		static int lookAt(int x, int y,int xdir, int ydir, bool isOnFly){
 			int point;
 			int distance = 0;
 			if (xdir != 0) {
-				for (point = x+xdir; point < walls.size() && point>0; point += xdir) {
+				for (point = x+xdir; point < walls.size() && point>=0; point += xdir ) {
 					if (walls[point][y]&&!(isOnFly&&point!=x+xdir))
 						break;
 					distance++;
@@ -101,7 +101,7 @@ namespace robot {
 			}
 			else
 			{
-				for (point = y +ydir; point < walls.size() && point>0; point += ydir) {
+				for (point = y +ydir; point < walls[0].size() && point>=0; point += ydir) {
 					if (walls[x][point] && !(isOnFly && point != y + ydir))
 						break;
 					distance++;
@@ -200,52 +200,52 @@ namespace robot {
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,1, isOnFly);
 				case 1:
-					return Labitinth::lookAt((int)*position.getX(), 0,1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),1,0, isOnFly);
 				case 2:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,-1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),0,-1, isOnFly);
 				case 3:
-					return Labitinth::lookAt((int)*position.getX(), 0,-1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(),-1,0, isOnFly);
 				}
 				break;
 			case language::Sides::BACK:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,-1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
 				case 1:
-					return Labitinth::lookAt((int)*position.getX(), 0, -1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
 				case 2:
-					return Labitinth::lookAt(0, (int)*position.getY(), 0,1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
 				case 3:
-					return Labitinth::lookAt((int)*position.getX(), 0,1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
 				}
 				break;
 			case language::Sides::RIGHT:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), 0, 1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
 				case 1:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,-1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
 				case 2:
-					return Labitinth::lookAt((int)*position.getX(), 0,-1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
 				case 3:
-					return Labitinth::lookAt(0, (int)*position.getY(), 0,1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
 				}
 				break;
 			case language::Sides::LEFT:
 				switch (rotation)
 				{
 				case 0:
-					return Labitinth::lookAt((int)*position.getX(), 0,-1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), -1,0, isOnFly);
 				case 1:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,1, isOnFly);
 				case 2:
-					return Labitinth::lookAt((int)*position.getX() , 0,1,0, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 1,0, isOnFly);
 				case 3:
-					return Labitinth::lookAt(0, (int)*position.getY(),0,-1, isOnFly);
+					return Labitinth::lookAt((int)*position.getX(), (int)*position.getY(), 0,-1, isOnFly);
 				}
 				break;
 			}
@@ -311,7 +311,9 @@ namespace robot {
 			return std::nullopt;
 		}
 		static std::optional<std::shared_ptr<MemoryCell>> WhereAmI() {
+			Labitinth::print(position, isOnFly, rotation);
 			return std::make_shared<MemoryCell>(std::make_shared<Square>(Robot::position));
+
 		}
 
 	};

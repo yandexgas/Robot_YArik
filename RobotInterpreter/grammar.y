@@ -21,7 +21,8 @@ std::vector<int>* dimensions;
 language::Square* square;
 std::list<std::shared_ptr<language::Node>>* operands_;
 std::list<language::fparam>* params_;
-std::list<std::pair<language::Commands, std::optional<Sides>>>* cmd
+std::list<std::pair<language::Commands, std::optional<language::Sides>>>* cmd;
+std::shared_ptr<language::Command_list>* cmd_lst;
 language::fparam* fparam_;
 char ch_;
 }
@@ -66,7 +67,7 @@ char ch_;
 %type <params_>args
 %type <params_>arglst
 %type <cmd> robot_command
-%type <cmd> robot_oper
+%type <cmd_lst> robot_oper
 %type <Prog_> stmt_lst
 %type <types_> type
 %type <Prog_> program
@@ -133,7 +134,12 @@ robot_oper:
 	robot_command {$$=new std::shared_ptr<Command_list>();
 			*$$= std::make_shared<Command_list>(1,*$1);
 			delete $1;}
-	| robot_oper ARROW robot_command {(**$$).addCommand($1,$3);}
+	| robot_oper ARROW robot_command {
+				auto cmd = (*($2)).front;
+				(*$1)->addCommand(cmd.first, cmd.second);
+				$$=$1;
+				delete $3;
+					}
 	;
 
 robot_command:
@@ -312,7 +318,9 @@ expr:
 		*$$=std::make_shared<ArrayIndaxation_expression>(1, *$1,*$3);
 		delete $1; delete$3;}
 
-	| GDEYA {/*пока не до этого*/}
+	| GDEYA {$$=new std::shared_ptr<Node>();
+		*$$=std::make_shared<Where_operator>(1);
+		}
 
 	| '*' expr %prec STAR {$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<StarOperator>(1, *$2);

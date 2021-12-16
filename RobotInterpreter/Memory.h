@@ -18,7 +18,7 @@ namespace language {
 		MemoryCell(std::shared_ptr<Type> tp, bool lval=false): data_(tp), lvalue(lval){}
 		MemoryCell(MemoryCell& mem) {
 			//data_ = mem.data_->makeClone();
-			data_ = mem.data_;
+			data_ = mem.data_->makeClone();
 			lvalue = mem.lvalue;
 		}
 		MemoryCell(MemoryCell&& mem)noexcept {
@@ -32,6 +32,9 @@ namespace language {
 		 virtual bool isInMemory() {
 			return lvalue;
 		}
+		 void applyValueChange() {
+			 lvalue = true;
+		 }
 		MemoryCell operator+(MemoryCell val) {
 			MemoryCell result;
 			if (isFloating(data_->getType(), val.data_->getType())) {
@@ -479,7 +482,6 @@ namespace language {
 		}
 		void clear() {
 			localMemory_.clear();
-			higerFrame_ = nullptr;
 		}
 		
 

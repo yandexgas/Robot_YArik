@@ -67,8 +67,8 @@
      POVERNI = 283,
      VZLETI = 284,
      OSTANOV = 285,
-     GDEYA = 286,
-     SMOTRI = 287,
+     SMOTRI = 286,
+     GDEYA = 287,
      ARROW = 288,
      PERED = 289,
      ZAD = 290,
@@ -77,15 +77,13 @@
      FUNC = 293,
      VCLUCHIT = 294,
      FILEPATH = 295,
-     PECHAT = 296,
-     CHITAT = 297,
-     UMINUS = 298,
-     ADR = 299,
-     FIELD_OPER = 300,
-     STAR = 301
+     UMINUS = 296,
+     ADR = 297,
+     FIELD_OPER = 298,
+     STAR = 299
    };
 #endif
-#pragma once
+
 #include "Nodes.h"
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -104,17 +102,20 @@ bool bval;
 language::Types types_;
 std::string* string;
 language::Sides sides;
+language::Commands commands;
 std::vector<int>* dimensions;
 language::Square* square;
 std::list<std::shared_ptr<language::Node>>* operands_;
 std::list<language::fparam>* params_;
+std::list<std::pair<language::Commands, std::optional<language::Sides>>>* cmd;
+std::shared_ptr<language::Command_list>* cmd_lst;
 language::fparam* fparam_;
-char ch_
+char ch_;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 118 "grammar.tab.h"
+#line 119 "grammar.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
