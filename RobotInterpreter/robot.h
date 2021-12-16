@@ -92,7 +92,7 @@ namespace robot {
 			int distance = 0;
 			if (xdir != 0) {
 				for (point = x+xdir; point < walls.size() && point>=0; point += xdir ) {
-					if (walls[point][y]&&!(isOnFly&&point!=x+xdir))
+					if (walls[point][y]&&!(isOnFly&&point==x+xdir))
 						break;
 					distance++;
 				}
@@ -104,7 +104,7 @@ namespace robot {
 			else
 			{
 				for (point = y +ydir; point < walls[0].size() && point>=0; point += ydir) {
-					if (walls[x][point] && !(isOnFly && point != y + ydir))
+					if (walls[x][point] && !(isOnFly && point == y + ydir))
 						break;
 					distance++;
 				}

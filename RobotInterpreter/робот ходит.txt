@@ -1,13 +1,10 @@
+
 poka(1) nachalo
 	gdeya?;
 	tseloye i = smotri->pravo;
-	esli (i>0) nachalo
-		poverni->pravo;
-		gdeya?;
-		idi->pered;
-		gdeya?;
-konets
-     inache nachalo
+	smotri->pravo->ostanov->poverni->napravo->idi->vpered;
+gdeya?;
+     esli (i<1) nachalo
 	yacheyka k = gdeya?;
 	smotri->pered->ostanov->idi->pered;
 	gdeya?;
