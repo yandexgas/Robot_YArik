@@ -149,7 +149,7 @@ After making a movement, the robot lands.
 ## Standard library functions:
 At the moment, the standard library is under development and it will be split into 2 parts:
 - A compiled part written in C ++ (to provide the language with access to those functions that are not included in it, for example, working with the console and files)
-- An interpreted part written in this language, connected via "#vkluchit <path to file>" for the necessary functions for which performance is not important and there is everything you need to implement in the language.(temporarily functions for working with strings will be implemented here, but later will be rewritten in C ++)
+- An interpreted part written in this language, connected via "#vkluchit \<path to file>" for the necessary functions for which performance is not important and there is everything you need to implement in the language.(temporarily functions for working with strings will be implemented here, but later will be rewritten in C ++)
 
 ### == Current standard library functions ==
 
