@@ -1,7 +1,5 @@
-tsikl (22r;
 pechataem(proverka gdeya? yacheyka);
 massiv str = "pipa";
-poka(wf;
 tsikl(tseloye i =0:3)
 	pechataem(str[i]);
 yacheyka u = {1,2,1};
@@ -9,7 +7,6 @@ simvol;
 pechataem(u);
 chitaem(adr u);
 pechataem (u=>x);
-
 u=>x=u=>y;
 tseloye x = u=>y;
 pechataem (x);
