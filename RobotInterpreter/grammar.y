@@ -285,7 +285,7 @@ expr:
 	| CHAR	{$$=new std::shared_ptr<Node>();
 		*$$=std::make_shared<Literal<char>>($1,language::Types::BYTE,@1.first_line);}
 	| CONSTSTRING {$$=new std::shared_ptr<Node>();
-		*$$=std::make_shared<constString>(*$1,@1.first_line);
+		*$$=std::make_shared<ConstString>(*$1,@1.first_line);
 		delete $1;}
 
 	| name {$$=new std::shared_ptr<Node>();

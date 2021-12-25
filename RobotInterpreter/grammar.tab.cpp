@@ -2279,7 +2279,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 283 "grammar.y"
     {(yyval.Node_)=new std::shared_ptr<Node>();
-		*(yyval.Node_)=std::make_shared<constString>(*(yyvsp[(1) - (1)].string),(yylsp[(1) - (1)]).first_line);
+		*(yyval.Node_)=std::make_shared<ConstString>(*(yyvsp[(1) - (1)].string),(yylsp[(1) - (1)]).first_line);
 		delete (yyvsp[(1) - (1)].string);;}
     break;
 
@@ -2861,29 +2861,29 @@ namespace robot {
 void main(){
  
  //yydebug = 300;
-            
-            fopen_s(&yyin, "pipa.txt", "r");
-            yyparse();
-           
-                system("color 04");
-                if (yynerrs <= 0) {
-                    try {
-                    system("color 02");
-                    robot::initArea();
-                    std::cout << std::endl << "========Program log=========" << std::endl;
-                    (*root)->initMemory(initStLib());
-                    (*root)->pass();
-                    delete root;
-                    fclose(yyin);
-                    std::cout << std::endl << "========End=========" << std::endl;
-                    }
+        fopen_s(&yyin, "pipa.txt", "r");
+        yyparse();
 
-                    catch (Script_error e) {
-                        system("color 04");
-                        std::cout << e;
-                        yynerrs += 1;
-                    }
-                }
-                std::cout << "Errors detected: " << yynerrs << std::endl;
+        system("color 04");
+        if (yynerrs <= 0) {
+            try {
+                system("color 02");
+                robot::initArea();
+                std::cout << std::endl << "========Program log=========" << std::endl;
+                (*root)->initMemory(initStLib());
+                (*root)->pass();
+                delete root;
+                fclose(yyin);
+                std::cout << std::endl << "========End=========" << std::endl;
+            }
+
+            catch (Script_error e) {
+                system("color 04");
+                std::cout << e;
+                yynerrs += 1;
+            }
+        }
+        std::cout << "Errors detected: " << yynerrs << std::endl;
+    
            
 }

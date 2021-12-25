@@ -330,8 +330,6 @@ namespace robot {
 			file >> size_y;
 			file.ignore(1);
 
-
-
 			for (int i = 0; i < size_x; i++) {
 				Labitinth::walls.push_back({});
 				for (int j = 0; j < size_y; j++)

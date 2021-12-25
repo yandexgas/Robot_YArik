@@ -141,8 +141,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="grammar.tab.cpp" />
+    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Nodes.cpp" />
-    <ClCompile Include="RobotInterpreter.cpp" />
+    <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Exceptions.h" />

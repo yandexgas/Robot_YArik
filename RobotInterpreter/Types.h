@@ -129,34 +129,34 @@ namespace language {
 			value_ = v.value_;
 			return *this;
 		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+		std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Math_type<T>>(value_, type);
 		}
-		virtual void operator=(std::shared_ptr<Type> a) {
+		void operator=(std::shared_ptr<Type> a) override {
 			value_ = (T)*a;
 		}
-		virtual operator int()override {
+		operator int() override {
 			return value_;
 		}
-		explicit virtual operator float() override {
+		explicit operator float() override {
 			return value_;
 		}
-		explicit virtual operator bool()override {
+		explicit operator bool()override {
 			return value_;
 		}
-		virtual const Types getType() const noexcept override {
+		const Types getType() const noexcept override {
 			return type;
 		}
-		explicit virtual operator char() {
+		explicit operator char() override {
 			return value_;
 		}
-		virtual ~Math_type() override {}
+		~Math_type() override {}
 	};
 	class Link : public Type {
 	private:
 		std::shared_ptr<Type> pointer_;
 		bool inited = false;
-		virtual const Types getHideType() const noexcept override {
+		const Types getHideType() const noexcept override {
 			return Types::LINK;
 		}
 	public:
@@ -185,42 +185,36 @@ namespace language {
 				return pointer_;
 			else throw Script_error("Non initiallized memory access.");
 		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+		std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Link>((*pointer_).makeClone());
 		}
-		virtual void operator=(std::shared_ptr<Type> a) override {
-			if (a->getHideType() != Types::LINK)
-				pointer_ = (*a).makeClone();
-			else
-				pointer_ = (**std::dynamic_pointer_cast<Link>(a))->makeClone();
-			inited = true;
-		}
-		virtual const Types getType() const noexcept {
+		void operator=(std::shared_ptr<Type> a) override;
+		const Types getType() const noexcept override {
 				return pointer_->getType();
 		}
 
-		explicit virtual operator int() override {
+		explicit operator int() override {
 			if (inited)
 				return (int)*pointer_;
 			else throw Script_error("Non initiallized memory access.");
 		}
-		explicit virtual operator float() {
+		explicit operator float() override {
 			if (inited)
 				return (float)*pointer_;
 			else throw Script_error("Non initiallized memory access.");
 		}
-		explicit virtual operator bool() {
+		explicit operator bool() override {
 			if (inited)
 				return (bool)*pointer_;
 			else throw Script_error("Non initiallized memory access.");
 		}
-		explicit virtual operator char() {
+		explicit  operator char() override {
 			if (inited)
 				return (char)*pointer_;
 			else throw Script_error("Non initiallized memory access.");
 		}
 
-		virtual ~Link() override {}
+		~Link() override {}
 	};
 
 	class Pointer :public Type {
@@ -240,22 +234,13 @@ namespace language {
 		Pointer(std::shared_ptr<std::shared_ptr<Type>> ptr) {
 			ptr_ = ptr;
 		}
-		virtual const Types getType() const noexcept override { return Types::POINTER; }
-		virtual void operator=(std::shared_ptr<Type> ptr) {
-			if (ptr->getType() == Types::POINTER) {
-				auto tmp = std::dynamic_pointer_cast<Pointer>(ptr)->ptr_;
-				if (ptr_ &&  (**tmp).getType() != (**ptr_).getType())
-					throw Script_error("Different pointer tipes");
-				ptr_ = tmp;
-			}
-			else
-				throw Script_error("Type can not be converted to pointer");
-		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+		const Types getType() const noexcept override { return Types::POINTER; }
+		void operator=(std::shared_ptr<Type> ptr) override;
+		std::shared_ptr<Type> makeClone() const noexcept override {
 
 			return std::make_shared<Pointer>(ptr_);
 		}
-		virtual operator bool() {
+		operator bool() override {
 			if (*ptr_)
 				return true;
 			else return false;
@@ -263,7 +248,7 @@ namespace language {
 		std::shared_ptr<Type> operator*() {
 			return *ptr_;
 		}
-		virtual ~Pointer() {}
+		~Pointer() override {}
 	};
 
 	class Square : public Type
@@ -285,25 +270,15 @@ namespace language {
 		Square(Square& v) : X_(std::make_shared<Math_type<int>>(*v.X_, Types::INT)),
 			Y_(std::make_shared<Math_type<int>>(*v.Y_, Types::INT)), 
 			busy_(std::make_shared<Math_type<bool>>(*v.busy_, Types::BOOL)) {}
-		Square& operator=(Square val) {
-			*X_ = *(val.X_);
-			*Y_ = *(val.Y_);
-			*busy_ = *(val.busy_);
-			return *this;
-		}
-		virtual const Types getType() const noexcept override {
+		Square& operator=(Square val);
+		const Types getType() const noexcept override {
 			return type;
 		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+		std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Square>(*X_, *Y_, *busy_);
 		}
-		virtual void operator=(std::shared_ptr<Type> a) {
-			auto tmp= std::dynamic_pointer_cast<Square>(a);
-			if (tmp)
-				*this = *tmp;
-			else throw Script_error("This object can't be converted to square.");
-		}
-		virtual operator Square() {
+		void operator=(std::shared_ptr<Type> a) override;
+		operator Square() {
 			return*this;
 		}
 		std::shared_ptr<Type> getY()const noexcept {
@@ -327,7 +302,7 @@ namespace language {
 			*busy_ = val;
 			return *this;
 		}
-		virtual ~Square() override {}
+		~Square() override {}
 	};
 
 
@@ -338,80 +313,28 @@ namespace language {
 		std::vector<std::shared_ptr<Link>> data_;
 		std::vector<int> dimensions_;
 	public:
-		explicit Array(std::vector<int>& dimensions) : dimensions_(dimensions) {
-			int mult=1;
-			for (auto i : dimensions_)
-				mult *= i;
-			if (mult < 0)
-				throw std::length_error("Too much elements in massiv");// Вообще тут еще сразу проверка и на нулевые элементы
-			for (int i = 0; i < mult; i++) {
-				data_.push_back(std::make_shared<Link>(std::make_shared<Math_type<char>>(Types::BYTE),false));
-			}
-		}
-		Array(){}
-		Array(std::vector<int> dimensions, std::vector<std::shared_ptr<Link>> data) : dimensions_(dimensions) {
-			for (auto a : data) 
-				data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
-		}
-		Array(Array& arr) :dimensions_(arr.dimensions_){
-			for (auto a : arr.data_)
-				data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
-		}
-		Array(Array&& arr) noexcept {
-			data_ = std::move(arr.data_);
-			dimensions_ = std::move(arr.dimensions_);
-		}
-		Array& operator=(Array& arr) {
-			if ( &arr != this) {
-				dimensions_ = arr.dimensions_;
-				data_.clear();
-				for (auto a : arr.data_)
-					data_.push_back(std::dynamic_pointer_cast<Link>(a->makeClone()));
-			}
-			return *this;
-		}
-		Array& operator=(Array&& arr) noexcept {
-			if (&arr != this) {
-				data_ = std::move(arr.data_);
-				dimensions_ = std::move(arr.dimensions_);
-			}
-			return *this;
-		}
+		explicit Array(std::vector<int>& dimensions);
+		Array(){}// Вроде даже не нужен будет
+		Array(std::vector<int> dimensions, std::vector<std::shared_ptr<Link>> data);
+		Array(Array& arr);
+		Array(Array&& arr) noexcept ;
+		Array& operator=(Array& arr);
+		Array& operator=(Array&& arr) noexcept;
 		std::vector<std::shared_ptr<Link>>& getDataLink() {
 			return data_;
 		}
-		virtual const Types getType() const noexcept override {
+		const Types getType() const noexcept override {
 			return type;
 		}
-		virtual std::shared_ptr<Type> makeClone() const noexcept override {
+		 std::shared_ptr<Type> makeClone() const noexcept override {
 			return std::make_shared<Array>(this->dimensions_,this->data_);
 		}
-		virtual void operator=(std::shared_ptr<Type> a) {
-			auto tmp = std::dynamic_pointer_cast<Array>(a);
-			if (tmp)
-				*this = *tmp;
-			else
-				throw Script_error("Object can't be converted to array.");
-		}
+		 void operator=(std::shared_ptr<Type> a) override;
 		size_t getDimensionality()const noexcept {
 			return dimensions_.size();
 		}
-		std::shared_ptr<Link> operator[](std::vector<int>& path) {
-
-			if (path.size() != dimensions_.size())
-				throw std::out_of_range("Incorrect indexation.");
-			int sz = path.size() - 1;
-			size_t index = path[sz] >= dimensions_[sz] ? throw Script_error("Out of massive range.") : path[sz--];
-
-			for (int multi = 1; sz >= 0; sz--) {
-				if (path[sz] >= dimensions_[sz])
-					throw Script_error("Out of massive range.");
-				multi *= dimensions_[sz];
-				index += path[sz] * multi;
-			}
-			return data_[index];
-		}
-		virtual ~Array() override {}
+		std::shared_ptr<Link> operator[](std::vector<int>& path);
+		~Array() override {}
 	};
 
 	

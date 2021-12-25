@@ -1,6 +1,10 @@
+
+poka(fa;
 vzleti;
 gdeya?;
+tsikl(afw;
 pechataem(smotri->vpered);
+simvol;
 ostanov;
 pechataem(smotri->vpered);
 vzleti->idi->pered;

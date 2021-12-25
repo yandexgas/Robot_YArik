@@ -15,13 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RobotInterpreter.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Nodes.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="grammar.tab.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Types.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

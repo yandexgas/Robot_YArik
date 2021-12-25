@@ -1,0 +1,75 @@
+tseloye a;
+chitaem(adr a);
+tseloye i=factor(a);
+pechataem(i);
+
+
+
+pechataem('\n');
+massiv ak ={7,7};
+	tsikl(tseloye o =0:6) nachalo
+	chitaem(adr a);
+	ak[0,o]=a;
+konets
+
+pechataem('$');
+pechataem('\n');
+
+tsikl(tseloye o =0:6) nachalo
+	chitaem(adr a);
+	ak[1,o]=a;
+konets
+bubble(adr ak, 7);
+pechataem('$');
+pechataem('\n');
+tsikl(tseloye o =0:6) nachalo
+	pechataem(ak[0,o]);
+konets
+pechataem('$');
+pechataem('\n');
+tsikl(tseloye o =0:6) nachalo
+	pechataem(ak[1,o]);
+konets
+
+
+
+
+tseloye funktsiya factor(tseloye arg) nachalo
+	esli(~(arg>0||arg<0)) nachalo
+		rezultat = 1;
+	konets
+	inache nachalo
+		rezultat = arg* factor(arg -1);
+	konets
+konets
+
+funktsiya bubble (ukazatel massiv ar, tseloye size) nachalo
+	tsikl(tseloye i =0: (razmer *ar) -1 ) nachalo
+		tsikl(tseloye j = 1:size-1 )nachalo
+			tsikl(tseloye k=0: size-2) nachalo
+				esli ((*ar)[i,k]>(*ar)[i,k+1]) nachalo
+					tseloye x = (*ar)[i,k];
+					(*ar)[i,k]=(*ar)[i,k+1];
+					(*ar)[i,k+1] = x;
+				konets
+			konets
+		konets
+	konets
+konets  
+
+pechataem(2.5);
+f(2.5);
+funktsiya f(tseloye i) nachalo
+	pechataem('i');
+konets 
+
+funktsiya f(drobnoye j) nachalo
+	pechataem('j');
+	
+	funktsiya f(simvol s1, simvol s2) nachalo
+		pechataem('S');
+		tseloye s3 = s2;
+		f(s3);
+	konets
+		f(j,j);
+	konets 
