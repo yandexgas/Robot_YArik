@@ -156,7 +156,7 @@ namespace language {
 			return *this;
 		}
 
-		virtual std::optional<Node*> getPtr() {
+		Node* getPtr() {
 			return fptr_;
 		}
 		bool operator==(std::list<std::shared_ptr<MemoryCell>>& f);

@@ -424,7 +424,7 @@ namespace language {
 			auto fptr = (*mem)[fun];
 			auto target_func = fptr->getPtr();
 			if (target_func)
-				return dynamic_cast<FunDeclaration_expression*>(target_func.value())->funcCal(fun.arg);
+				return dynamic_cast<FunDeclaration_expression*>(target_func)->funcCal(fun.arg);
 			else
 				return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.arg);
 		}
