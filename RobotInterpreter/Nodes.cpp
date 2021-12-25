@@ -380,8 +380,8 @@ namespace language {
 			}
 			if (body_) {
 				body_->pass(stackFrame);
-				if (tp_)
-					return result;
+				if (tp_) 
+					return std::make_shared<MemoryCell>(result->getData());
 				else
 					return std::nullopt;
 			}

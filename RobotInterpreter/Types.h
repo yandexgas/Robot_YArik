@@ -152,6 +152,7 @@ namespace language {
 		}
 		~Math_type() override {}
 	};
+
 	class Link : public Type {
 	private:
 		std::shared_ptr<Type> pointer_;
