@@ -142,11 +142,12 @@ namespace language {
 	};
 	class Node;
 	class Function {
+	private:
+		Node* fptr_;
 	protected:
 		const std::list<fparam> params_;
 		const std::optional<Types> type_;
 		const bool ptrType_;
-		Node* fptr_;
 	public:
 		Function(std::list<fparam> param, std::optional<Types> type = {}, bool ptrType = false) :params_(param), type_(type), ptrType_(ptrType),fptr_(nullptr) {}
 		bool operator==(Function& f);
@@ -156,7 +157,7 @@ namespace language {
 			return *this;
 		}
 
-		Node* getPtr() {
+		virtual Node* getPtr() {
 			return fptr_;
 		}
 		bool operator==(std::list<std::shared_ptr<MemoryCell>>& f);

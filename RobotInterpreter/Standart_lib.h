@@ -9,15 +9,15 @@ namespace language {
 	public:
 		LibFunction(std::list<fparam> param, std::optional<Types> type = {}, bool ptrType = false) : Function(param, type, ptrType) {}
 		virtual std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>&) = 0;
-		virtual std::optional<Node*> getPtr() {
-			return std::nullopt;
+		Node* getPtr() override {
+			return nullptr;
 		}
 	};
 
 	class PrintFunction : public LibFunction {
 	public:
 		PrintFunction(std::list<fparam> param, std::optional<Types> type = {}, bool ptrType = false): LibFunction(param, type, ptrType) {}
-		virtual std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {
+		std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {
 			auto tmp = args.front();
 			args.pop_front();
 			auto b = tmp->getData()->getHideType() == Types::LINK ?
@@ -88,7 +88,7 @@ namespace language {
 			std::regex rg("[{] *([0-9]+) *, *([0-9]+) *, *(istino|lozhno) *[}]");
 			reg_square = rg;
 		}
-		virtual std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {
+		std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {
 			auto tmp = args.front();
 			args.pop_front();
 			auto b = std::dynamic_pointer_cast<Pointer>(tmp->getData());
