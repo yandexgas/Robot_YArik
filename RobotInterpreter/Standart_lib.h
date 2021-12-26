@@ -85,7 +85,7 @@ namespace language {
 		std::cmatch result;
 	public:
 		ReadFunction(std::list<fparam> param, std::optional<Types> type = {}, bool ptrType = false) : LibFunction(param, type, ptrType) {
-			std::regex rg("[{] *([0-9]+) *, *([0-9]+) *, *(istino|lozhno) *[}]");
+			std::regex rg("[{][ \t]*([0-9]+)[ \t]*,[ \t]*([0-9]+)[ \t]*,[ \t]*(istino|lozhno)[ \t]*[}]");
 			reg_square = rg;
 		}
 		std::optional<std::shared_ptr<MemoryCell>> operator()(std::list<std::shared_ptr<MemoryCell>>& args) override {

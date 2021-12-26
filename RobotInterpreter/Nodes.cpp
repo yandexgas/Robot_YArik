@@ -292,8 +292,7 @@ namespace language {
 
 	std::optional<std::shared_ptr<MemoryCell>> VarDeclaration_expression::pass(std::shared_ptr<MemoryFrame> mem) {
 		try {
-			memTable_ = mem;
-			memTable_->insert(var);
+			mem->insert(var);
 			if (init_expression_) {
 				auto r1 = init_expression_->pass(mem);
 				if (r1) {
@@ -309,24 +308,21 @@ namespace language {
 		}
 	}
 
-	SquareDecl::SquareDecl(std::int16_t lino, std::string name, std::shared_ptr<Node> exp1, std::shared_ptr<Node> exp2, std::shared_ptr<Node> exp3) : Node(lino) {
+	SquareDecl::SquareDecl(std::int16_t lino, std::string name, std::shared_ptr<Node> exp1, std::shared_ptr<Node> exp2, std::shared_ptr<Node> exp3) : Node(lino), name_(name) {
 		init_expression_[0] = exp1;
 		init_expression_[1] = exp2;
 		init_expression_[2] = exp3;
-		var = std::make_shared<Variable>(name, Types::SQUARE, false);
-		name_ = name;
 	}
 
 	std::optional<std::shared_ptr<MemoryCell>> SquareDecl::pass(std::shared_ptr<MemoryFrame> mem) {
 		try {
-			memTable_ = mem;
-			memTable_->insert(var);
 			std::optional < std::shared_ptr<MemoryCell>> tmp[3];
 			for (int i = 0; i < 3; i++)
 				tmp[i] = init_expression_[i]->pass(mem);
 			if (tmp[0] && tmp[1] && tmp[2]) {
 				auto yach = std::make_shared<Square>((int)*(tmp[0].value()->getData()), (int)*(tmp[1].value()->getData()), (bool)*(tmp[2].value()->getData()));
-				*var = std::make_shared<MemoryCell>(yach);
+				auto var = std::make_shared<Variable>(name_, yach);
+				mem->insert(var);
 			}
 			else
 				throw Script_error("Yacheyka initialization value expected.");
@@ -339,7 +335,6 @@ namespace language {
 
 	std::optional<std::shared_ptr<MemoryCell>> ArrDecl::pass(std::shared_ptr<MemoryFrame> mem) {
 		try {
-			memTable_ = mem;
 			std::vector<int> tmp;
 			for (auto a : operLst_) {
 				auto r = a->pass(mem);
@@ -350,7 +345,7 @@ namespace language {
 			}
 			auto arr = std::make_shared<Array>(tmp);
 			auto var = std::make_shared<Variable>(name_, arr);
-			memTable_->insert(var);
+			mem->insert(var);
 			return std::nullopt;
 		}
 		catch (Script_error e) {
@@ -380,10 +375,13 @@ namespace language {
 			}
 			if (body_) {
 				body_->pass(stackFrame);
+				std::optional<std::shared_ptr<MemoryCell>> res;
 				if (tp_) 
-					return std::make_shared<MemoryCell>(result->getData());
+					res = std::make_shared<MemoryCell>(result->getData());
 				else
-					return std::nullopt;
+					res = std::nullopt;
+				stackFrame->clear();
+				return res;
 			}
 			else if (tp_)
 				throw Script_error("Result value missed.");

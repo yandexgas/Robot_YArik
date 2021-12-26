@@ -238,7 +238,6 @@ namespace language {
 	private:
 		std::shared_ptr<Node> init_expression_[3];
 		std::string name_;
-		std::shared_ptr<Variable> var;
 	public:
 		SquareDecl(std::int16_t lino, std::string name, std::shared_ptr<Node> exp1, std::shared_ptr<Node> exp2, std::shared_ptr<Node> exp3);
 		std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override;
