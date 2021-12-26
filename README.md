@@ -16,7 +16,7 @@ The robot can move to an adjacent cell if there is no obstacle in it.
 
 
 # Variable declarations in the following format:
-Variable names must start with a letter or an underscore, after which they can contain numbers, letters and underscores in any number, the names must not coincide with the reserved words of the language.
+Variable names must start with a letter or an underscore, after which they can contain numbers, letters and underscores in any number, the names must not coincide with the reserved words of the language, variables and functions declared with the same name in the same scope. The names can be the same as variables and functions declared in the wider global scope, but in this case, the corresponding members of the global scope will not be accessed from the current scope.
 - Signed integer variable tseloye \<variable name> [= \<arithmetic expression>]
  > Example: tseloe i_ = 5 + 5
 - Variable of type floating point drobnoye \<variable name> [= \<arithmetic expression>]
@@ -135,7 +135,9 @@ After making a movement, the robot lands.
  > If the types of the parameters passed to the function do not exactly match the types of the arguments when declared, they will be automatically converted to the required   types, if possible, otherwise - an error: There are no functions that accept such parameters.
             
  > If the function returns a value, then the built-in variable "rezultat" has the type of the function's result defined in it. Inside a function, you can work with it as with a regular variable, and upon completion of the function, the value of this variable will be returned (the function is not interrupted when using this variable, so that temporary results of calculations can be stored there). If this variable has not been assigned a value inside the function, then it will return the default value for the corresponding data type. (A little later, I think to still make it a mistake to protect against inattentive errors.)
-            
+> Recursive function calls allowed.
+> Function names must start with a letter or an underscore, after which they can contain numbers, letters and underscores in any number, the names must not coincide with the reserved words of the language, variables and functions declared with the same name in the same scope .The names can be the same as variables and functions declared in the wider global scope, but in this case, the corresponding members of the global scope will not be accessed from the current scope.
+#### Note: the name of the variable declared in the body of the function, as well as the name of the function parameter, may coincide with the name of the function, but in this case, it will be impossible to call this function or any of its overloads inside this function by name.
 ### Function overloading is defined according to the following rules:
 1. In the local scope, a function with a prototype EXACTLY matching the passed parameters is searched for.- In a more global scope, a function with a prototype EXACTLY matching the passed parameters is searched for until a function is found, or the global scope is checked.
 2. In the local scope, a function with a prototype is searched for from parameters into which the passed types can be converted. (attention! if there are several such functions, then this will result in undefined behavior, however, if you delve into the implementation of the interpreter, you can understand that the most recent function declared in this scope with a suitable prototype will take precedence.)
