@@ -4,7 +4,7 @@ Interpreter for a simple cellular robot programming language.
 
 A system for controlling a robot moving through a labyrinth. The maze cell is in the shape of a square. (can be formally used as a programming language).
 The robot can move to an adjacent cell if there is no obstacle in it.
-№ File structure:
+# File structure:
 1) ".yar" files
   - Files containing executable code. The program is written in files with this extension.
 2) ".vkl" files
