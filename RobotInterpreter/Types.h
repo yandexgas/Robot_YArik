@@ -107,7 +107,7 @@ namespace language {
 			throw Script_error("This type can't be converted to logicheskoye.");
 		}
 		explicit virtual operator char() {
-			throw Script_error("This type can't be converted to logicheskoye.");
+			throw Script_error("This type can't be converted to simvol.");
 		}
 		virtual ~Type(){}
 	};

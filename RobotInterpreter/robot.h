@@ -117,7 +117,7 @@ namespace robot {
 	};
 	class Robot {
 	private:
-
+		static bool activated;
 		constexpr static int go(Sides side){
 			switch (side)
 			{
@@ -282,6 +282,8 @@ namespace robot {
 		static bool AllowScriptExecution;
 		static bool isOnFly;
 		static std::optional<std::shared_ptr<MemoryCell>> doCommands(std::list<std::pair<Commands, std::optional<Sides>>> cmd) {
+			if (!activated)
+				throw Script_error("Robot can not do commands because start position and labirinth have not been inited with .env file.");
 			int exec_code = 0;
 			for (auto a : cmd) {
 				switch (a.first)
@@ -317,14 +319,17 @@ namespace robot {
 			return std::make_shared<MemoryCell>(std::make_shared<Square>(Robot::position));
 
 		}
-
+		static void setActive() {
+			activated = true;
+		}
 	};
 
-	static void initArea() {
+	static void initArea(std::string area) {
 		std::ifstream file;
-		file.open("Area.env");
+		file.open(area+".env");
 		if (file.is_open()) {
-			int x=0, y=0, size_x, size_y, exit_x=0, exit_y=0;
+			Robot::setActive();
+			size_t x=0, y=0, size_x, size_y, exit_x=0, exit_y=0;
 			file >> size_x;
 			file.ignore(1);
 			file >> size_y;
@@ -364,6 +369,9 @@ namespace robot {
 				Labitinth::exit_.setBusy(false);
 				Labitinth::print(Robot::position,false, Robot::rotation);
 			file.close();
+		}
+		else {
+			throw Script_error("Enviroment error. No such .env file.", 0);
 		}
 	}
 }

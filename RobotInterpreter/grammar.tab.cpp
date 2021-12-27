@@ -2852,38 +2852,190 @@ namespace robot {
     bool Robot::isOnFly = false;
     Square Robot::position{};
     int Robot::rotation = 0;
-
+    bool Robot::activated = false;
     Square Labitinth::exit_{};
     std::vector<std::vector<bool>>Labitinth::walls{};
 }
 
 #include "lex.yy.cpp"
-void main(){
- 
- //yydebug = 300;
-        fopen_s(&yyin, "pipa.txt", "r");
-        yyparse();
+#include <fstream>
+#include <filesystem>
 
+void Including(std::string mainfile, std::string includs_path = "");
+void IDE_mode(std::string filename = "");
+
+int main(int argc, char* argv[]) {
+
+        //yydebug = 300;
+    try {
+        if (argc == 2) {
+            std::string filename = argv[1];
+            fopen_s(&yyin, (filename + ".yar").c_str(), "r");
+            if (!yyin) {
+                std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
+                IDE_mode(filename);
+            }
+        }
+        else if (argc == 1)
+            IDE_mode();
+        else {
+            std::string tmp = argv[1];
+            if (std::filesystem::exists(tmp + ".yar"))
+                Including(argv[1], argv[2]);
+            else {
+                std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
+                IDE_mode(tmp);
+            }
+        }  
+        if (yynerrs <= 0) {
+            yyparse();
+            system("cls");
+        }
         system("color 04");
         if (yynerrs <= 0) {
-            try {
+
                 system("color 02");
-                robot::initArea();
+                if (argc == 4)
+                    robot::initArea(argv[3]);
                 std::cout << std::endl << "========Program log=========" << std::endl;
                 (*root)->initMemory(initStLib());
                 (*root)->pass();
                 delete root;
-                fclose(yyin);
-                std::cout << std::endl << "========End=========" << std::endl;
-            }
+                std::cout << std::endl << "=========== End ============" << std::endl;   
+        }
+    }
+    catch (Script_error e) {
+            system("color 04");
+            std::cout << e;
+            yynerrs += 1;
+    }
+    if (yyin) {
+        fclose(yyin);
+        std::filesystem::remove(".temp.yar.vkl");
+    }
+    std::cout << "Errors detected: " << yynerrs << std::endl;
 
-            catch (Script_error e) {
-                system("color 04");
-                std::cout << e;
-                yynerrs += 1;
+
+}
+
+void IDE_mode(std::string filename ) {
+    if (filename.empty()) {
+        std::cout << "Enter name of program: ";
+        std::cin >> filename;
+        if (std::filesystem::exists(filename + ".yar")) {
+            std::cout << ">>> Warning: file with this name already exists! Do you really want to rewrite it? yes or no" << std::endl;
+            std::string answer = "";
+            while (answer.empty())
+            {
+                std::cin >> answer;
+                if (answer == "yes")
+                    break;
+                else if (answer == "no") {
+                    std::cout << ">>> Do you want to start program from file: " << filename + ".yar" << " ? yes or no." << std::endl;
+                    answer.clear();
+                    while (answer.empty())
+                    {
+                        std::cin >> answer;
+                        if (answer == "yes") {
+                            Including(filename);
+                            return;
+                        }
+                        else if (answer == "no") {
+                            exit(0);
+                        }
+                        else {
+                            answer.clear();
+                            std::cout << "Please, enter \"yes\" or \"no\": ";
+                        }
+                    }
+                }
+                else {
+                    answer.clear();
+                    std::cout << "Please, enter \"yes\" or \"no\": ";
+                }
             }
         }
-        std::cout << "Errors detected: " << yynerrs << std::endl;
-    
-           
+    }
+        std::ofstream targetFile(filename + ".yar");
+        std::cout <<std::endl<< "====== Your program ======" << std::endl;
+        while (!std::cin.eof()) {
+            std::string line;
+            std::getline(std::cin, line);
+            targetFile << line << std::endl;
+        }
+        std::cout << "==========================" << std::endl;
+        std::cin.clear();
+        targetFile.close();
+        Including(filename);
 }
+#include<unordered_set>
+
+void Including(std::string mainfile, std::string includs_path) {
+
+    std::unordered_set <std::string> includs;
+    if (includs_path.empty() || !std::filesystem::exists(includs_path + ".vkl")) {
+        includs_path.clear();
+        std::cout << ">>> If you want to include another .yar files input name of .vkl file, if it exists. Else input end of input." << std::endl;
+        std::cin >> includs_path;
+        std::cin.clear();
+        if (includs_path.empty()) {
+            std::cout << ">>> If you want to include another .yar files input names of that files through a space and press EOF at the end. The order matter. "
+                << mainfile << ".vkl file will be generated." << std::endl;
+            includs_path = mainfile;
+            std::ofstream targetFile(includs_path + ".vkl"); 
+            while (!std::cin.eof()) {
+                std::string tmp;
+                std::cin >> tmp;
+                if(!tmp.empty())
+                    targetFile << tmp << std::endl;
+            }
+            targetFile.close();
+            if (std::filesystem::is_empty(includs_path + ".vkl")) {
+                std::filesystem::remove(includs_path + ".vkl");
+                includs_path.clear();
+            }
+        }
+    }
+    if (!includs_path.empty()) {
+        includs_path += ".vkl";
+        if (!std::filesystem::exists(includs_path))
+            throw Script_error("Linker error! No such .vkl file", 0);
+        std::ifstream targetFile(mainfile + ".yar");
+        int line = 1;
+        std::ofstream tmpFile(".temp.yar.vkl");
+        includs.insert(mainfile + ".yar");
+        std::ostreambuf_iterator<char> it(tmpFile);
+        std::copy(std::istreambuf_iterator<char>(targetFile), std::istreambuf_iterator<char>(), it);
+        targetFile.close();
+        std::ifstream targetFile1(includs_path);
+        while (!targetFile1.eof())
+        {
+            std::string tmp;
+            targetFile1 >> tmp;
+            if (includs.contains(tmp)) {
+                std::cout << "Linker error in line: " << line << std::endl << "Multiple inclusions of " << tmp << std::endl;
+                yynerrs += 1;
+            }
+            else if (!tmp.empty() && std::filesystem::exists(tmp)) {
+                includs.insert(tmp);
+                std::ifstream tmpF(tmp);
+                std::ostreambuf_iterator<char> it(tmpFile);
+                std::copy(std::istreambuf_iterator<char>(tmpF), std::istreambuf_iterator<char>(), it);
+                tmpF.close();
+            }
+            else {
+                if (!tmp.empty()) {
+                    std::cout << "Linker error in line: " << line << std::endl << "No such file: " << tmp << std::endl;
+                    yynerrs += 1;
+                }
+            }
+            line++;
+        }
+
+        tmpFile.close();
+        fopen_s(&yyin, ".temp.yar.vkl", "r");
+    }
+    else
+        fopen_s(&yyin, (mainfile + ".yar").c_str(), "r");
+}
+
