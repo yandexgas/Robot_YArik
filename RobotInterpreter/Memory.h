@@ -16,15 +16,14 @@ namespace language {
 		friend class Function;
 	public:
 		MemoryCell(std::shared_ptr<Type> tp, bool lval=false): data_(tp), lvalue(lval){}
-		MemoryCell(MemoryCell& mem) {
-			//data_ = mem.data_->makeClone();
-			data_ = mem.data_;
-			lvalue = mem.lvalue;
+		MemoryCell(MemoryCell& mem) : data_(mem.data_), lvalue(mem.lvalue) {}
+		MemoryCell(MemoryCell&& mem) noexcept : data_(mem.data_), lvalue(mem.lvalue) {
+			mem.data_ = nullptr;
 		}
-		MemoryCell(MemoryCell&& mem)noexcept {
-			//data_ = mem.data_->makeClone();
-			data_ = std::move(mem.data_);
-			lvalue = mem.lvalue;
+		virtual void operator=(MemoryCell mem) {
+			if (!lvalue)
+				throw Script_error("rvalue expression can't change the value");
+			else *data_ = mem.getData();
 		}
 		std::shared_ptr<Type> getData() {
 			return data_;
@@ -120,10 +119,13 @@ namespace language {
 		Variable(std::string name, MemoryCell& mem): MemoryCell(mem), NamedObject(name,true){}
 		Variable(std::string name, std::shared_ptr<Type> tp) : MemoryCell(tp,true), NamedObject(name,true){}
 		Variable(std::string name, Types type, bool ptr = false);
-		virtual void operator=(std::shared_ptr<MemoryCell> mem) override {
+		void operator=(std::shared_ptr<MemoryCell> mem) override {
 			*data_ = (*mem).getData();
 		}
-		virtual bool isInMemory() override {
+		void operator=(MemoryCell mem) override {
+			 *data_ = mem.getData();
+		}
+		bool isInMemory() override {
 			return true;
 		}
 	};

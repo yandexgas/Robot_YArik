@@ -152,7 +152,7 @@ namespace language {
 		return res;
 	}
 
-	Variable::Variable(std::string name, Types type, bool ptr) :NamedObject(name, true), MemoryCell(nullptr) {
+	Variable::Variable(std::string name, Types type, bool ptr) :NamedObject(name, true), MemoryCell(nullptr,true) {
 		switch (type)
 		{
 		case Types::ARRAY:

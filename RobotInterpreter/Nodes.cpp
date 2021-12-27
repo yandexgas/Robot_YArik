@@ -465,10 +465,11 @@ namespace language {
 				auto j = last.value();
 				auto jj = *j + one;
 				i->applyValueChange();
-				for ( ; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) + one)) {
+				for ( ; (bool)*((*i < jj).getData()) ; *i = std::move(*i + one)) {
 					if (loop_body_ && robot::Robot::AllowScriptExecution) {
 						auto mem2 = std::make_shared<MemoryFrame>(memTable_);
 						loop_body_->pass(mem2);
+						mem2->clear();
 					}
 				}
 			}
@@ -484,7 +485,8 @@ namespace language {
 		try {
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			try {
-				while ((bool)*(conditon_->pass(memTable_)).value()->getData() && robot::Robot::AllowScriptExecution)
+				while ((bool)*(conditon_->pass(memTable_)).value()->getData() 
+						&& robot::Robot::AllowScriptExecution )
 				{
 					if (body_) {
 						body_->pass(memTable_);
