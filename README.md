@@ -182,6 +182,24 @@ After making a movement, the robot lands.
  > If the function returns a value, then the built-in variable "rezultat" has the type of the function's result defined in it. Inside a function, you can work with it as with a regular variable, and upon completion of the function, the value of this variable will be returned (the function is not interrupted when using this variable, so that temporary results of calculations can be stored there). If this variable has not been assigned a value inside the function, then it will return the default value for the corresponding data type. (A little later, I think to still make it a mistake to protect against inattentive errors.)
 > Recursive function calls allowed.
 > Function names must start with a letter or an underscore, after which they can contain numbers, letters and underscores in any number, the names must not coincide with the reserved words of the language, variables and functions declared with the same name in the same scope .The names can be the same as variables and functions declared in the wider global scope, but in this case, the corresponding members of the global scope will not be accessed from the current scope.
+  # Function decklaration examples: 
+       
+            simvol funktsiya f1(ukazatel tseloye i) nachalo
+              tsikl(*i : 10) nachalo
+                  rezultat = rezultat + *i;  // a result variable is declared by default for functions that return a value and cannot be overridden.
+              konets
+            rezultat = rezultat - 'a';
+            konets
+            
+           funktsiya f1(tseloye i) nachalo
+              tsikl(i : 10) nachalo
+                  rezultat = rezultat + *i;  // In this case, the function does not return a value, the result variable is not declared by default, 
+                                            //so an error will occur. 
+                                           //The result variable can be declared explicitly, but it will be the most common variable and the function will not return its value.
+            konets
+            rezultat = rezultat - 'a';
+            konets
+            
 #### Note: the name of the variable declared in the body of the function, as well as the name of the function parameter, may coincide with the name of the function, but in this case, it will be impossible to call this function or any of its overloads inside this function by name.
 ### Function overloading is defined according to the following rules:
 1. In the local scope, a function with a prototype EXACTLY matching the passed parameters is searched for.- In a more global scope, a function with a prototype EXACTLY matching the passed parameters is searched for until a function is found, or the global scope is checked.
