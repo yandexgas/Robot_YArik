@@ -188,7 +188,7 @@ After making a movement, the robot lands.
               tsikl(*i : 10) nachalo
                   rezultat = rezultat + *i;  // a result variable is declared by default for functions that return a value and cannot be overridden.
               konets
-            rezultat = rezultat - 'a';
+              rezultat = rezultat - 'a';
             konets
             
            funktsiya f1(tseloye i) nachalo
@@ -196,8 +196,8 @@ After making a movement, the robot lands.
                   rezultat = rezultat + *i;  // In this case, the function does not return a value, the result variable is not declared by default, 
                                             //so an error will occur. 
                                            //The result variable can be declared explicitly, but it will be the most common variable and the function will not return its value.
-            konets
-            rezultat = rezultat - 'a';
+              konets
+              rezultat = rezultat - 'a';
             konets
             
 #### Note: the name of the variable declared in the body of the function, as well as the name of the function parameter, may coincide with the name of the function, but in this case, it will be impossible to call this function or any of its overloads inside this function by name.
@@ -220,7 +220,7 @@ At the moment, the standard library is under development and it will be split in
 
 - logicheskoye chitaem (\<pointer to cell or arithmetic type expression>)
  > Reads an expression of the specified type from the console. To read a cell, the text in the console must be entered in accordance with a regular expression
-"[{] * ([0-9] +) *, * ([0-9] +) *, * (istino | lozhno) * [}]"
+"[{][ \t]*([0-9]+)[ \t]*,[ \t]*([0-9]+)[ \t]*,[ \t]*(istino|lozhno)[ \t]*[}]"
 Returns "lozhno" if there was an error while typing.
 
 - void pechataem (\<expression of arithmetic type or cell>)
