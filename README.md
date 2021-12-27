@@ -4,8 +4,53 @@ Interpreter for a simple cellular robot programming language.
 
 A system for controlling a robot moving through a labyrinth. The maze cell is in the shape of a square. (can be formally used as a programming language).
 The robot can move to an adjacent cell if there is no obstacle in it.
-1. Formal language for describing the robot's actions (formally it can be used as a programming language):
+№ File structure:
+1) ".yar" files
+  - Files containing executable code. The program is written in files with this extension.
+2) ".vkl" files
+  - Inclusion files. The names of the .yar files (paths to them) that will be attached to the main program file are listed here. File names can be listed with newlines or spaces.
+#### Note: in fact, no check has been added yet that this file contains .yar files. In fact, both its structure and implementation at this stage are very mediocre and primitive, but for now this is enough to implement the main functionality.
+3) ".env " files (example of file formatting: see "Area.env")
+- Robot and maze configuration files. The first line contains 2 non-negative integers separated by commas, without spaces - the dimensions of the maze.
+After that, from the next line, a map of the maze is drawn using the following symbols:
+- \# — is an obstacle.
+- . — an empty cell (in fact, it can be designated in the file by any unoccupied character, including a space);
+- O — exit from the maze (should be 1);
+- ^ — initial position of the robot (initial rotation is always forward)
+#### Note:
+All cells of the maze must be filled. That is, if the maze is 12x10
+then you should have 12 lines containing 10 characters each.
+#### ATTENTION:
+At the moment, it is not provided to check the correctness of filling the maze, and in case of deviation from the established rules, the cells may move out and the result will be different. If the position of the robot is not specified, then by default its coordinates are 0, 0 (upper left corner).
 
+4) .temp.yar.vkl files
+- Temporary files are the result of building a project with inclusions.After the end of the program is deleted, (if not deleted it will be overwritten the next time you start)
+#### Note: 
+In the near future these files will no longer be temporary and will be converted to .sbor files containing information about the main program, inclusions and maze. This will solve 2 problems: you will not need to write 3 arguments each time on the command line, if you have already built the program in the required configuration once; will make it easier to find errors, because at the moment the line number containing the syntax error or run-time error is exactly the line number in this temporary file. If the program contains inclusions, then naturally, the line will not coincide in number with the corresponding line in one of the source files.
+# How to start.
+- Build an .exe file from a Visual studio project (you just need to clone the repository, open the project in Visual Studio and build in Release mode.)
+- Build the project using the Make build system (Make - the file will be attached to the repository later, the one that is there now is outdated, they will soon get their hands on and I will fix it.)
+> ## Attention: at the moment the interpreter is supported only for OS Windows. So far, the project cannot be built for Linux. As soon as the main work is completed, the code will be adapted to run on Linux.
+- The launch can be in several modes:
+1) Development environment mode
+Just run the .exe file from the console, or by mouse click.
+You will see a menu with a proposal to enter the name of the program file and then the text of the program. When finished, enter ctrl + Z. The program text will be saved in the \<name>.yar file.
+Then you will be prompted to select an existing .vkl file (a file that contains the names of the program files that should be included in the current one. There may be function declarations or executable code.) The files are included in that order. If there is no such file, but you want to create it, press ctrl + Z and enter the names of the files that you want to include in the project (along with the .yar extensions) separated by a space, press ctrl + Z when finished;
+Attention: multiple inclusion of files will cause a collector error, a message about which will be displayed in the console.
+
+2) Startup mode without switching on
+Start the interpreter through the console and supply the name of the .yar file (without extension) that you want to execute in the command line parameters
+
+3) Startup mode with inclusions
+Similar to the second mode, pass one more command line parameter - the name of the .vkl file (without the extension).
+#### Note: In case of any errors in the startup arguments, you will be prompted to re-enter them. Don't worry, no files will be overwritten without your consent (probably :))
+
+4) Launch mode with maze
+Pass the name of the .env file (no extension) as the third command line parameter. The IDE does not support the creation of .env files, so in case of any error, the program will not start, but will display a warning message.
+#### Note: It is obvious that the need to write some kind of .vkl file in order to connect the maze later, even if you do not need .vkl, is a logical design error. It will be fixed soon.
+#### Note 2: all included programs are located in the same scope. Empty files can also be "included".
+# Formal language for describing the robot's actions:
+(formally it can be used as a programming language)
 
 # The following literals are supported
 - Boolean "istino" and "lozhno", boolean constants and expressions are converted to signed integers as 1 and 0, respectively. 0 converts to "lozhno", any other number to "istiono".
