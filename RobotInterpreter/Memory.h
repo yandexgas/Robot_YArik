@@ -45,6 +45,7 @@ namespace language {
 		 MemoryCell operator&&(MemoryCell val);
 		 MemoryCell operator>(MemoryCell val);
 		 MemoryCell operator<(MemoryCell val);
+
 		friend MemoryCell operator<=(YFields field,MemoryCell source){
 			if (source.data_->getType() != Types::SQUARE)
 				throw Script_error("That object is not yacheyka.");
@@ -68,6 +69,7 @@ namespace language {
 			}
 			return res;
 		}
+
 		MemoryCell operator[](std::vector<int> path);
 		MemoryCell operator*();
 		static MemoryCell checkTypes(Types t1, Types t2) {
@@ -176,12 +178,6 @@ namespace language {
 		std::shared_ptr<Function> getConvertable(std::list < std::shared_ptr< MemoryCell> >& lst);
 	};
 
-	struct fcall
-	{
-		std::string name;
-		std::list<std::shared_ptr<MemoryCell>> arg;
-	};
-
 	class MemoryFrame {
 	private:
 		std::shared_ptr<MemoryFrame> higerFrame_;
@@ -195,14 +191,10 @@ namespace language {
 		void insert(std::string name, std::shared_ptr<Function> f);
 
 		std::shared_ptr<Variable> operator[](std::string name);
-		
-
-		std::shared_ptr<Function> operator[](fcall& f);
+		std::shared_ptr<Function> operator[](std::pair<std::string, std::list<std::shared_ptr<MemoryCell>>>& fcall);
 		void clear() {
 			localMemory_.clear();
 		}
-		
-
 		~MemoryFrame(){}
 	};
 }

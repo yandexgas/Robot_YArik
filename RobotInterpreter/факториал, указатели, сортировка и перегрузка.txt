@@ -20,19 +20,16 @@ tsikl(tseloye o =0:6) nachalo
 	ak[1,o]=a;
 konets
 bubble(adr ak, 7);
-pechataem('$');
-pechataem('\n');
-tsikl(tseloye o =0:6) nachalo
-	pechataem(ak[0,o]);
+pechat(adr ak, 0);
+pechat(adr ak, 1);
+
+
+funktsiya pechat (ukazatel massiv ak, tseloye dim) nachalo
+	pechataem('$');
+	pechataem('\n');
+	tsikl(tseloye o =0:6)
+		pechataem((*ak)[dim,o]);
 konets
-pechataem('$');
-pechataem('\n');
-tsikl(tseloye o =0:6) nachalo
-	pechataem(ak[1,o]);
-konets
-
-
-
 
 tseloye funktsiya factor(tseloye arg) nachalo
 	esli(~(arg>0||arg<0)) nachalo

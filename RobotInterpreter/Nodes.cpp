@@ -353,8 +353,9 @@ namespace language {
 		}
 	}
 
-	FunDeclaration_expression::FunDeclaration_expression(std::int16_t lino, std::string name, std::list<fparam> params, std::shared_ptr<Node> child, std::optional<Types> tp, bool isPtr) : Node(lino),
-		name_(name), body_(child), params_(params), tp_(tp), isPtr(isPtr) {
+	FunDeclaration_expression::FunDeclaration_expression(std::int16_t lino, std::string name, std::list<fparam> params, std::shared_ptr<Node> child, std::optional<Types> tp, bool isPtr) 
+		: Node(lino), name_(name), body_(child), params_(params), tp_(tp), isPtr(isPtr) 
+	{
 		fptr_ = std::make_shared<Function>(params, tp, isPtr);
 		fptr_->setPtr(this);
 	}
@@ -416,15 +417,13 @@ namespace language {
 				}
 				else throw Script_error("Incorrect expression. Can't be a parametr");
 			}
-			fcall fun;
-			fun.name = name_;
-			fun.arg = tmp;
+			std::pair <std::string, std::list<std::shared_ptr<MemoryCell>>> fun (name_,tmp);
 			auto fptr = (*mem)[fun];
 			auto target_func = fptr->getPtr();
 			if (target_func)
-				return dynamic_cast<FunDeclaration_expression*>(target_func)->funcCal(fun.arg);
+				return dynamic_cast<FunDeclaration_expression*>(target_func)->funcCal(fun.second);
 			else
-				return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.arg);
+				return (*std::dynamic_pointer_cast<LibFunction>(fptr))(fun.second);
 		}
 		catch (Script_error e) {
 			throw Script_error(e, lino_);
@@ -466,7 +465,7 @@ namespace language {
 				auto j = last.value();
 				auto jj = *j + one;
 				i->applyValueChange();
-				for (; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) + one)) {
+				for ( ; (bool)*(((*i) < jj).getData()); (*i) = std::make_shared<MemoryCell>((*i) + one)) {
 					if (loop_body_ && robot::Robot::AllowScriptExecution) {
 						auto mem2 = std::make_shared<MemoryFrame>(memTable_);
 						loop_body_->pass(mem2);
@@ -485,7 +484,7 @@ namespace language {
 		try {
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			try {
-				while ((bool)(*(*(conditon_->pass(memTable_)).value()).getData()) && robot::Robot::AllowScriptExecution)
+				while ((bool)*(conditon_->pass(memTable_)).value()->getData() && robot::Robot::AllowScriptExecution)
 				{
 					if (body_) {
 						body_->pass(memTable_);
@@ -508,7 +507,7 @@ namespace language {
 			auto fst = conditon_->pass(mem);
 			memTable_ = std::make_shared<MemoryFrame>(mem);
 			if (fst) {
-				if ((bool)(*(fst.value()->getData())))
+				if ((bool)*(fst.value()->getData()))
 					body_->pass(memTable_);
 				else if (else_body_)
 					else_body_->pass(memTable_);

@@ -277,33 +277,35 @@ namespace language {
 		}
 	}
 
-	std::shared_ptr<Function> MemoryFrame::operator[](fcall& f) {
-		if (localMemory_.contains(f.name) && !(localMemory_[f.name]->isVariable())) {
-			auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[f.name]);
-			auto res = tmp->get(f.arg);
+	std::shared_ptr<Function> MemoryFrame::operator[](std::pair<std::string, std::list<std::shared_ptr<MemoryCell>>>& fcall) {
+		if (localMemory_.contains(fcall.first) 
+			&& !(localMemory_[fcall.first]->isVariable())) {
+			auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[fcall.first]);
+			auto res = tmp->get(fcall.second);
 			if (!res) {
 				auto prev = higerFrame_;
 				while (prev)
 				{
-					if (prev->localMemory_.contains(f.name) && !(prev->localMemory_[f.name]->isVariable())) {
-						tmp = std::static_pointer_cast<FunctionList>(prev->localMemory_[f.name]);
-						res = tmp->get(f.arg);
+					if (prev->localMemory_.contains(fcall.first) 
+						&& !(prev->localMemory_[fcall.first]->isVariable())) {
+						tmp = std::static_pointer_cast<FunctionList>(prev->localMemory_[fcall.first]);
+						res = tmp->get(fcall.second);
 						if (res)
 							return res;
 					}
-					else if (prev->localMemory_.contains(f.name))
+					else if (prev->localMemory_.contains(fcall.first))
 						throw Script_error("Attemp to use variable as function.");
 					prev = prev->higerFrame_;
 				}
-				auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[f.name]);
-				res = tmp->getConvertable(f.arg);
+				auto tmp = std::static_pointer_cast<FunctionList>(localMemory_[fcall.first]);
+				res = tmp->getConvertable(fcall.second);
 				if (!res) {
 					prev = higerFrame_;
 					while (prev)
 					{
-						if (prev->localMemory_.contains(f.name)) {
-							tmp = std::static_pointer_cast<FunctionList>(prev->localMemory_[f.name]);
-							res = tmp->getConvertable(f.arg);
+						if (prev->localMemory_.contains(fcall.first)) {
+							tmp = std::static_pointer_cast<FunctionList>(prev->localMemory_[fcall.first]);
+							res = tmp->getConvertable(fcall.second);
 							if (res)
 								return res;
 						}
@@ -315,13 +317,13 @@ namespace language {
 			else return res;
 			throw Script_error("No function with complitable parametrs.");
 		}
-		else if (localMemory_.contains(f.name)) {
+		else if (localMemory_.contains(fcall.first)) {
 			throw Script_error("Attemp to use variable as function.");
 		}
 		else
 		{
 			if (higerFrame_)
-				return (*higerFrame_)[f];
+				return (*higerFrame_)[fcall];
 			else throw Script_error("No function with complitable parametrs.");
 		}
 	}
