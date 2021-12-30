@@ -153,7 +153,7 @@ poka (\<boolean expression>) nachalo \<set of language sentences> konets
   
 > #### Note: if there is only one sentence between the beginning and the end, then the beginning and the end can be omitted. The bodies of both operator branches are separate scopes.
 ## ROBOT CONTROL OPERATORS
-- Moving one cell in a given direction relative to the current "idi-> pered" - forward, "idi -> zad" - backward, "idi-> left" - to the left, "idi-> pravo" - right. If the robot encounters an obstacle, then it breaks down and the program ends (there is no one to execute it :))
+- Moving one cell in a given direction relative to the current "idi-> pered" - forward, "idi -> zad" - backward, "idi-> left" - to the left, "idi-> pravo" - right. If the robot encounters an obstacle, then it breaks down and the program ends (there is no one to execute it :)). The program also ends if the robot found a way out of the maze (if, of course, he was looking for it), regardless of the presence of subsequent executable commands, since according to the terms of reference, the robot exists only in order to get out of labyrinth.
 - Turn relative to the current direction "poverni -> levo" - turn left,
 "poverni -> pravo" - turn right. The reversal back and forth is undefined and is an error.
 - Measuring the distance to the first obstacle in the given direction "smotri -> \<direction>". Returns the length - an integer.
