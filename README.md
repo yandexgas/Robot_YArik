@@ -220,7 +220,7 @@ At the moment, the standard library is under development and it will be split in
 
 - logicheskoye chitaem (\<pointer to cell or arithmetic type expression>)
  > Reads an expression of the specified type from the console. To read a cell, the text in the console must be entered in accordance with a regular expression
-"[{][ \t]*([0-9]+)[ \t]*,[ \t]*([0-9]+)[ \t]*,[ \t]*(istino|lozhno)[ \t]*[}]"
+"{[ \t]*([0-9]+)[ \t]*,[ \t]*([0-9]+)[ \t]*,[ \t]*(istino|lozhno)[ \t]*}"
 Returns "lozhno" if there was an error while typing.
 
 - void pechataem (\<expression of arithmetic type or cell>)
