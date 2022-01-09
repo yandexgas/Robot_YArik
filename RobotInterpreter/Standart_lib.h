@@ -79,6 +79,7 @@ namespace language {
 				res = true;
 				(***ptr) = std::make_shared<Math_type<T>>(readed, type);
 			}
+			std::cin.ignore(1, '\n');
 			return std::make_shared<MemoryCell>(std::make_shared<Math_type<bool>>(res, Types::BOOL));
 		}
 		std::regex reg_square;

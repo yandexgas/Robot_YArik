@@ -1,7 +1,7 @@
 #include "Memory.h"
 namespace language {
 
-	MemoryCell MemoryCell::operator+(MemoryCell val) {
+	MemoryCell MemoryCell::operator+(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -16,7 +16,7 @@ namespace language {
 			return result;
 		}
 	}
-	MemoryCell MemoryCell::operator-(MemoryCell val) {
+	MemoryCell MemoryCell::operator-(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -31,7 +31,7 @@ namespace language {
 			return result;
 		}
 	}
-	MemoryCell MemoryCell::operator*(MemoryCell val) {
+	MemoryCell MemoryCell::operator*(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -46,7 +46,7 @@ namespace language {
 			return result;
 		}
 	}
-	MemoryCell MemoryCell::operator/(MemoryCell val) {
+	MemoryCell MemoryCell::operator/(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -81,17 +81,17 @@ namespace language {
 		result.data_ = std::make_shared< Math_type<bool>>(invers(data_), Types::BOOL);
 		return result;
 	}
-	MemoryCell MemoryCell::operator||(MemoryCell val) {
+	MemoryCell MemoryCell::operator||(const MemoryCell& val) {
 		MemoryCell result;
 		result.data_ = std::make_shared< Math_type<bool>>(Or(data_, val.data_), Types::BOOL);
 		return result;
 	}
-	MemoryCell MemoryCell::operator&&(MemoryCell val) {
+	MemoryCell MemoryCell::operator&&(const MemoryCell& val) {
 		MemoryCell result;
 		result.data_ = std::make_shared< Math_type<bool>>(And(data_, val.data_), Types::BOOL);
 		return result;
 	}
-	MemoryCell MemoryCell::operator>(MemoryCell val) {
+	MemoryCell MemoryCell::operator>(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -106,7 +106,7 @@ namespace language {
 			return result;
 		}
 	}
-	MemoryCell MemoryCell::operator<(MemoryCell val) {
+	MemoryCell MemoryCell::operator<(const MemoryCell& val) {
 		MemoryCell result;
 		if (isFloating(data_->getType(), val.data_->getType())) {
 			float to_type = 0;
@@ -122,7 +122,7 @@ namespace language {
 		}
 	}
 
-	MemoryCell MemoryCell::operator[](std::vector<int> path) {
+	MemoryCell MemoryCell::operator[](std::vector<int>& path) {
 		if (data_->getType() != Types::ARRAY)
 			throw Script_error("That object is not massiv.");
 		auto tmp = data_->getHideType() == Types::LINK ?
@@ -205,7 +205,7 @@ namespace language {
 		return true;
 	}
 
-	bool Function::convertableTo(std::list<std::shared_ptr<MemoryCell>>&f) {
+	bool Function::convertableTo(std::list<std::shared_ptr<MemoryCell>>& f) {
 		if (params_.size() != f.size())
 			return false;
 		auto j = f.begin();

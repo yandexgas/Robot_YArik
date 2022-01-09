@@ -315,6 +315,8 @@ namespace robot {
 			return std::nullopt;
 		}
 		static std::optional<std::shared_ptr<MemoryCell>> WhereAmI() {
+			if (!activated)
+				throw Script_error("Robot can not do commands because start position and labirinth have not been inited with .env file.");
 			Labitinth::print(position, isOnFly, rotation);
 			return std::make_shared<MemoryCell>(std::make_shared<Square>(Robot::position));
 

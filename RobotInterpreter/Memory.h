@@ -34,18 +34,18 @@ namespace language {
 		 void applyValueChange() {
 			 lvalue = true;
 		 }
-		 MemoryCell operator+(MemoryCell val);
-		 MemoryCell operator-(MemoryCell val);
-		 MemoryCell operator*(MemoryCell val);
-		 MemoryCell operator/(MemoryCell val);
+		 MemoryCell operator+(const MemoryCell& val);
+		 MemoryCell operator-(const MemoryCell& val);
+		 MemoryCell operator*(const MemoryCell& val);
+		 MemoryCell operator/(const MemoryCell& val);
 		 MemoryCell operator-();
 		 MemoryCell operator~();
-		 MemoryCell operator||(MemoryCell val);
-		 MemoryCell operator&&(MemoryCell val);
-		 MemoryCell operator>(MemoryCell val);
-		 MemoryCell operator<(MemoryCell val);
+		 MemoryCell operator||(const MemoryCell& val);
+		 MemoryCell operator&&(const MemoryCell& val);
+		 MemoryCell operator>(const MemoryCell& val);
+		 MemoryCell operator<(const MemoryCell& val);
 
-		friend MemoryCell operator<=(YFields field,MemoryCell source){
+		friend MemoryCell operator<=(YFields field,const MemoryCell& source){
 			if (source.data_->getType() != Types::SQUARE)
 				throw Script_error("That object is not yacheyka.");
 			MemoryCell result;
@@ -69,26 +69,30 @@ namespace language {
 			return res;
 		}
 
-		MemoryCell operator[](std::vector<int> path);
+		MemoryCell operator[](std::vector<int>& path);
 		MemoryCell operator*();
 		static MemoryCell checkTypes(Types t1, Types t2) {
 			MemoryCell res;
 			res.data_=std::make_shared< Math_type<bool>>(t1 == t2, Types::BOOL);
 			return res;
 		}
-		static MemoryCell checkTypes(MemoryCell t1, Types t2) {
+		static MemoryCell checkTypes(const MemoryCell& t1, Types t2) {
 			MemoryCell res;
 			res.data_ = std::make_shared< Math_type<bool>>(t1.data_->getType() == t2, Types::BOOL);
 			return res;
 		}
-		static MemoryCell checkTypes(Types t1, MemoryCell t2) {
-			MemoryCell res;
-			res.data_ = std::make_shared< Math_type<bool>>(t1== t2.data_->getType(), Types::BOOL);
-			return res;
+		static MemoryCell checkTypes(Types t1, const MemoryCell& t2) {
+			return checkTypes(t2, t1);
 		}
-		static MemoryCell checkTypes (MemoryCell t1, MemoryCell t2) {
+		static MemoryCell checkTypes (const MemoryCell& t1, const MemoryCell& t2) {
 			MemoryCell res;
-			res.data_ = std::make_shared< Math_type<bool>>(t1.data_->getType() == t2.data_->getType(), Types::BOOL);
+			if((t1.data_->getType() == t2.data_->getType()) && t1.data_->getType()==Types::POINTER){
+				auto tmp1 = std::dynamic_pointer_cast<Pointer>(t1.data_);
+				auto tmp2 = std::dynamic_pointer_cast<Pointer>(t2.data_);
+				res.data_ = std::make_shared< Math_type<bool>>((**tmp1)->getType() == (**tmp2)->getType(), Types::BOOL);
+			}
+			else  
+				res.data_ = std::make_shared< Math_type<bool>>(t1.data_->getType() == t2.data_->getType(), Types::BOOL);
 			return res;
 		}
 		MemoryCell arrayDimension();
