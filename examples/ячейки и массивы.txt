@@ -1,4 +1,4 @@
-pechataem(proverka adr gdeya? yacheyka);
+pechataem(proverka gdeya? yacheyka);
 massiv str = "pipa";
 tsikl(tseloye i =0:3)
 	pechataem(str[i]);
