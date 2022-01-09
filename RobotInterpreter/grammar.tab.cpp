@@ -2865,34 +2865,33 @@ void Including(std::string mainfile, std::string includs_path = "");
 void IDE_mode(std::string filename = "");
 
 int main(int argc, char* argv[]) {
-
         //yydebug = 300;
-    try {
-        if (argc == 2) {
-            std::string filename = argv[1];
-            fopen_s(&yyin, (filename + ".yar").c_str(), "r");
-            if (!yyin) {
-                std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
-                IDE_mode(filename);
+        try {
+            if (argc == 2) {
+                std::string filename = argv[1];
+                fopen_s(&yyin, (filename + ".yar").c_str(), "r");
+                if (!yyin) {
+                    std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
+                    IDE_mode(filename);
+                }
             }
-        }
-        else if (argc == 1)
-            IDE_mode();
-        else {
-            std::string tmp = argv[1];
-            if (std::filesystem::exists(tmp + ".yar"))
-                Including(argv[1], argv[2]);
+            else if (argc == 1)
+                IDE_mode();
             else {
-                std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
-                IDE_mode(tmp);
+                std::string tmp = argv[1];
+                if (std::filesystem::exists(tmp + ".yar"))
+                    Including(argv[1], argv[2]);
+                else {
+                    std::cout << ">>> Attention: Source file is not exist, entering IDE mode...";
+                    IDE_mode(tmp);
+                }
             }
-        }  
-        if (yynerrs <= 0) {
-            yyparse();
-            system("cls");
-        }
-        system("color 04");
-        if (yynerrs <= 0) {
+            if (yynerrs <= 0) {
+                yyparse();
+                system("cls");
+            }
+            system("color 04");
+            if (yynerrs <= 0) {
 
                 system("color 02");
                 if (argc == 4)
@@ -2901,21 +2900,20 @@ int main(int argc, char* argv[]) {
                 (*root)->initMemory(initStLib());
                 (*root)->pass();
                 delete root;
-                std::cout << std::endl << "=========== End ============" << std::endl;   
+                std::cout << std::endl << "=========== End ============" << std::endl;
+            }
         }
-    }
-    catch (Script_error e) {
+        catch (Script_error e) {
             system("color 04");
             std::cout << e;
             yynerrs += 1;
-    }
-    if (yyin) {
-        fclose(yyin);
-        std::filesystem::remove(".temp.yar.vkl");
-    }
-    std::cout << "Errors detected: " << yynerrs << std::endl;
-
-
+        }
+        if (yyin) {
+            fclose(yyin);
+            std::filesystem::remove(".temp.yar.vkl");
+        }
+        std::cout << "Errors detected: " << yynerrs << std::endl;
+    return 0;
 }
 
 void IDE_mode(std::string filename ) {
@@ -3037,5 +3035,6 @@ void Including(std::string mainfile, std::string includs_path) {
     }
     else
         fopen_s(&yyin, (mainfile + ".yar").c_str(), "r");
+    std::cin.clear();
 }
 

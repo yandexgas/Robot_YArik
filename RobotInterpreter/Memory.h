@@ -20,7 +20,7 @@ namespace language {
 		MemoryCell(MemoryCell&& mem) noexcept : data_(mem.data_), lvalue(mem.lvalue) {
 			mem.data_ = nullptr;
 		}
-		virtual void operator=(MemoryCell mem) {
+		void operator=(MemoryCell mem) {
 			if (!lvalue)
 				throw Script_error("rvalue expression can't change the value");
 			else *data_ = mem.getData();
@@ -121,9 +121,6 @@ namespace language {
 		Variable(std::string name, Types type, bool ptr = false);
 		void operator=(std::shared_ptr<MemoryCell> mem) override {
 			*data_ = (*mem).getData();
-		}
-		void operator=(MemoryCell mem) override {
-			 *data_ = mem.getData();
 		}
 		bool isInMemory() override {
 			return true;
