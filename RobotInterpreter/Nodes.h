@@ -225,10 +225,6 @@ namespace language {
 		VarDeclaration_expression(std::int16_t lino, std::string name, Types tp, bool isPtr,std::shared_ptr<Node> init = nullptr): Node(lino),init_expression_(init), name_(name) {
 			var = std::make_shared<Variable>(name, tp, isPtr);
 		}
-		VarDeclaration_expression(std::int16_t lino, std::string name, Types tp, bool isPtr, std::shared_ptr<MemoryCell> init) : Node(lino),name_(name) {
-			var = std::make_shared<Variable>(name, tp, isPtr);
-			*var = init;
-		}
 		std::optional<std::shared_ptr<MemoryCell>> pass(std::shared_ptr<MemoryFrame> mem) override;
 		const std::string& getName() {return name_;}
 		~VarDeclaration_expression() override {}
