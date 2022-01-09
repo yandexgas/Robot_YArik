@@ -1,6 +1,6 @@
 # Robot_YArik
 Interpreter for a simple cellular robot programming language.
-
+It is implemented using the "GNU Flex" lexical analyzer generator (older version is "Lex") and the parser generator "GNU Bison" (older version is "Yacc").
 
 A system for controlling a robot moving through a labyrinth. The maze cell is in the shape of a square. (can be formally used as a programming language).
 The robot can move to an adjacent cell if there is no obstacle in it.
@@ -116,12 +116,21 @@ ukazatel \<type name> \<variable name> [= \<expression of type pointer to a give
 
 - Type comparison operator: proverka \<type name>/\<variable name>/\<expression> \<type name>/\<variable name>/\<expression>
 #### Example:
-      proverka i slovo;
-      proverka 5 tseloye;
+      proverka i simvol;
+      proverka 5 tseloye; // true
+      
+      ukazatel simvol k;
+      ukazatel massiv m;
+      proverka *k '5'; // true
+      proverka k m ; // false
+      proverka *k 5 ; // false ( 5 - is tseloye);
+      proverka k ukazatel slovo ; // error view Note !
+    
+> #### Note: Only a non-pointer base type can be specified as an explicit type. This will be fixed in the future.
 - The assignment operator '=' (copies data.Converts to desired type if conversion is defined)
 
-- Arithmetic operators (defined only for arithmetic and boolean types): +, -, *, /, unary minus
--Logic operators (defined only for arithmetic and boolean types): &&, ||, <,>, ~ (inversion)
+- Arithmetic operators (defined only for arithmetic and boolean types): +, -, *, /, unary minus ; (--, ++, +=, etc... will be later)
+- Logic operators (defined only for arithmetic and boolean types): &&, ||, <,>, ~ (inversion); (==, !=, <=, >= will be later)
 
 ## Loop operators:
 - Loop with constant step
