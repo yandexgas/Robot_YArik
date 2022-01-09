@@ -130,7 +130,7 @@ ukazatel \<type name> \<variable name> [= \<expression of type pointer to a give
 - The assignment operator '=' (copies data.Converts to desired type if conversion is defined)
 
 - Arithmetic operators (defined only for arithmetic and boolean types): +, -, *, /, unary minus ; (--, ++, +=, etc... will be later)
--Logic operators (defined only for arithmetic and boolean types): &&, ||, <,>, ~ (inversion); (==, !=, <=, >= will be later)
+- Logic operators (defined only for arithmetic and boolean types): &&, ||, <,>, ~ (inversion); (==, !=, <=, >= will be later)
 
 ## Loop operators:
 - Loop with constant step
