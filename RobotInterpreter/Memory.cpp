@@ -2,124 +2,80 @@
 namespace language {
 
 	MemoryCell MemoryCell::operator+(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			to_type = sum(data_, val.data_, to_type);
-			result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
-			return result;
+
+		return std::move( operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z  { 
+			return sum(t, u, z); 
 		}
-		else {
-			int to_type = 0;
-			to_type = sum(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
-			return result;
-		}
+		));
 	}
+
 	MemoryCell MemoryCell::operator-(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			to_type = sub(data_, val.data_, to_type);
-			result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
-			return result;
+
+		return std::move(operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z {
+			return sub(t, u, z);
 		}
-		else {
-			int to_type = 0;
-			to_type = sub(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
-			return result;
-		}
+		));
 	}
+
 	MemoryCell MemoryCell::operator*(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			to_type = mul(data_, val.data_, to_type);
-			result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
-			return result;
+		return std::move(operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z {
+			return mul(t, u, z);
 		}
-		else {
-			int to_type = 0;
-			to_type = mul(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
-			return result;
-		}
+		));
 	}
+
 	MemoryCell MemoryCell::operator/(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			to_type = div(data_, val.data_, to_type);
-			result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
-			return result;
+		return std::move(operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z {
+			return div(t, u, z);
 		}
-		else {
-			int to_type = 0;
-			to_type = div(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
-			return result;
-		}
+		));
 	}
+
 	MemoryCell MemoryCell::operator-() {
 		MemoryCell result;
 		if (isFloating(data_->getType())) {
 			float to_type = 0;
 			to_type = uminus(data_, to_type);
 			result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
-			return result;
 		}
 		else {
 			int to_type = 0;
 			to_type = uminus(data_, to_type);
-			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
-			return result;
+			result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);	
 		}
+		return result;
 	}
+
 	MemoryCell MemoryCell::operator~() {
 		MemoryCell result;
 		result.data_ = std::make_shared< Math_type<bool>>(invers(data_), Types::BOOL);
 		return result;
 	}
+
 	MemoryCell MemoryCell::operator||(const MemoryCell& val) {
 		MemoryCell result;
 		result.data_ = std::make_shared< Math_type<bool>>(Or(data_, val.data_), Types::BOOL);
 		return result;
 	}
+
 	MemoryCell MemoryCell::operator&&(const MemoryCell& val) {
 		MemoryCell result;
 		result.data_ = std::make_shared< Math_type<bool>>(And(data_, val.data_), Types::BOOL);
 		return result;
 	}
+
 	MemoryCell MemoryCell::operator>(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			bool rs = more(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
-			return result;
-		}
-		else {
-			int to_type = 0;
-			bool rs = more(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
-			return result;
-		}
+		return std::move(operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z
+		{
+			return more(t, u, z);
+		}));
 	}
+
 	MemoryCell MemoryCell::operator<(const MemoryCell& val) {
-		MemoryCell result;
-		if (isFloating(data_->getType(), val.data_->getType())) {
-			float to_type = 0;
-			bool rs = less(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
-			return result;
-		}
-		else {
-			int to_type = 0;
-			bool rs = less(data_, val.data_, to_type);
-			result.data_ = std::make_shared< Math_type<bool>>(rs, Types::BOOL);
-			return result;
-		}
+		return std::move(operation(val, []<Ariphmetical T, Ariphmetical U, Ariphmetical_result Z> (T t, U u, Z z)->Z
+		{
+			return less(t, u, z);
+		}));
 	}
 
 	MemoryCell MemoryCell::operator[](std::vector<int>& path) {
@@ -128,17 +84,16 @@ namespace language {
 		auto tmp = data_->getHideType() == Types::LINK ?
 			std::dynamic_pointer_cast<Array>(**std::dynamic_pointer_cast<Link>(data_)) :
 			std::dynamic_pointer_cast<Array>(data_);
-		MemoryCell res((*tmp)[path], true);
-		return res;
+		return MemoryCell { (*tmp)[path], true };
 	}
+
 	MemoryCell MemoryCell::operator*() {
 		if (data_->getType() != Types::POINTER)
 			throw Script_error("That object is not ukazatel.");
 		auto tmp = data_->getHideType() == Types::LINK ?
 			std::dynamic_pointer_cast<Pointer>(**std::dynamic_pointer_cast<Link>(data_)) :
 			std::dynamic_pointer_cast<Pointer>(data_);
-		MemoryCell res(**tmp, true);
-		return res;
+		return MemoryCell{ **tmp, true };
 	}
 
 	MemoryCell MemoryCell::arrayDimension() {

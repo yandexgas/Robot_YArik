@@ -91,6 +91,7 @@ namespace language {
 	bool less(T u, U t, Z) {
 		return (Z)(*u) < (Z)(*t);
 	}
+	
 	class Type {
 	public:
 		virtual const Types getType() const noexcept = 0;

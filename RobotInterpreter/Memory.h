@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include"Types.h"
 namespace language {
+
 	class Function;
 	class MemoryCell {
 	private:
@@ -13,6 +14,25 @@ namespace language {
 			return t1 == Types::FLOAT || t2 == Types::FLOAT;
 		}
 		bool lvalue;
+
+		// Ўаблон функции дл€ основных бинарных операций с €чейками пам€ти, содержит приведение типа к float если хот€ бы
+		// один аргумент - дробное число, иначе - приводит тип к int и выпол€нет переданную в качестве аргумента функцию
+			template <class F>
+			MemoryCell operation(const MemoryCell& val, F func) {
+			MemoryCell result;
+			if (isFloating(data_->getType(), val.data_->getType())) {
+				float to_type = 0;
+				to_type = func(data_, val.data_, to_type);
+				result.data_ = std::make_shared<Math_type<float>>(to_type, Types::FLOAT);
+			}
+			else {
+				int to_type = 0;
+				to_type = func(data_, val.data_, to_type);
+				result.data_ = std::make_shared< Math_type<int>>(to_type, Types::INT);
+			}
+			return result;
+		}
+
 		friend class Function;
 	public:
 		MemoryCell(std::shared_ptr<Type> tp, bool lval=false): data_(tp), lvalue(lval){}
